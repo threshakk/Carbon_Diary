@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carbon Diary</title>
+<link rel="icon" type="image/png" href="assets/carbon-diary-logo.png">
+<style>
+:root{
+  --bg:#f3f7f5; --surface:#ffffff; --ink:#10282c; --muted:#53686b; --line:#d3dfdb;
+  --moss:#2b7350; --moss-ink:#ffffff; --lichen:#dcebe1; --amber:#8a5a00; --amber-bg:#fff1d0;
+  --red:#a1281f; --red-bg:#fde6e3; --bar:#2b7350; --bar2:#6aa889;
+  --hero:#f1f7f3; --foot:#e3ede7; --sky:#cdeaf6; --mint:#d6f0e0; --leaf:#b4e1b8; --skyb:#9fd5ec; --forest:#133d32;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1b1d; --surface:#152629; --ink:#e6f0ec; --muted:#9db3b0; --line:#28403f;
+    --moss:#5fb98a; --moss-ink:#06201a; --lichen:#1d3a30; --amber:#f0c36a; --amber-bg:#3a2e12;
+    --red:#ff9c92; --red-bg:#3d1f1c; --bar:#5fb98a; --bar2:#3f8466;
+    --hero:#12292b; --foot:#1a3436; --sky:#1b3d4b; --mint:#1a3d36; --leaf:#1f4a35; --skyb:#3c7d96; --forest:#0c2a22;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;font-weight:650}
+h1{font-size:1.6rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
+p{margin:.4em 0 .9em;max-width:70ch}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.top{background:var(--forest);color:#f3f7f5;position:sticky;top:0;z-index:5}
+header.top .wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.25rem;margin-right:auto}
+.brand svg{width:26px;height:26px;flex:none}
+.aboutlink{background:transparent;border:0;color:#f3f7f5;font:inherit;font-weight:500;padding:8px 10px;border-radius:8px;cursor:pointer}
+.aboutlink:hover{background:rgba(255,255,255,.12)}
+@media(max-width:480px){.aboutlink{display:none}}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:transparent;color:#cfe0da;border:0;padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav button[aria-current="page"]{background:#f3f7f5;color:#10282c;font-weight:600}
+nav button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.demo{background:var(--amber-bg);color:var(--amber);border-bottom:1px solid var(--line);font-size:.9rem}
+.demo .wrap{padding-top:8px;padding-bottom:8px}
+main{padding:22px 0 60px}
+section.view{display:none} section.view.on{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+.big{font-size:3rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.big span{font-size:1rem;font-weight:500;color:var(--muted);margin-left:6px}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.78rem;background:var(--lichen);color:var(--ink)}
+.badge.warn{background:var(--amber-bg);color:var(--amber)}
+.badge.bad{background:var(--red-bg);color:var(--red)}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+input[type=checkbox]{width:auto;margin-right:8px}
+.check{display:flex;align-items:center;margin-top:14px;font-weight:600}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+button.btn{background:var(--moss);color:var(--moss-ink);border:0;border-radius:9px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:99px;font:inherit;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.preview{margin-top:16px;padding:14px;border-radius:10px;background:var(--lichen)}
+.preview.err{background:var(--red-bg);color:var(--red)}
+.preview ul{margin:.3em 0 0;padding-left:1.1em}
+[hidden]{display:none!important}
+textarea{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;resize:vertical}
+textarea:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.iu{display:flex;align-items:center;gap:8px}.iu input{flex:1;min-width:0}.iu span{color:var(--muted);font-size:.9rem;white-space:nowrap}
+details.known{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:8px 12px}details.known summary{cursor:pointer;font-weight:600}
+.hrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+/* home hero */
+.hero{background:var(--hero);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:16px;text-align:center}
+.hero-inner{padding:32px 20px 22px}
+.hero-img{width:154px;height:154px;border-radius:24px;display:block;margin:0 auto 18px}
+.hero h1{font-size:clamp(1.6rem,4.5vw,2rem);margin:0 0 .35em}
+.lead{margin:0 auto 1.5em;color:var(--muted);font-size:1.05rem}
+button.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:336px;height:60px;margin:0 auto;border-radius:14px;font-size:1.1rem}
+button.cta svg{width:20px;height:20px}
+.linkbtn{background:transparent;border:0;color:var(--moss);font:inherit;padding:12px 8px;margin-top:6px;cursor:pointer;border-radius:8px}
+.linkbtn:hover{text-decoration:underline}
+.hero hr{border:0;border-top:1px solid var(--line);margin:18px 0 22px}
+.hero h2{font-size:1.1rem;margin-bottom:.9em}
+.tracks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:620px;margin:0 auto}
+@media(max-width:480px){.tracks{gap:2px}.tracks button{font-size:.78rem!important;padding:8px 2px!important}.tracks svg{width:24px!important;height:24px!important}}
+.tracks button{background:transparent;border:0;color:var(--ink);font:inherit;font-size:.9rem;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:12px;cursor:pointer}
+.tracks button:hover{background:var(--lichen)}
+.tracks svg{width:28px;height:28px;color:var(--moss)}
+.hero-foot{background:var(--foot);padding:14px 16px;font-size:.9rem;color:var(--muted)}
+/* dashboard: day by day */
+.dgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:760px){.dgrid{grid-template-columns:1fr}}
+.dbd{border-radius:22px;padding:20px 16px 18px;margin-bottom:16px;border:1px solid var(--line);background:linear-gradient(180deg,var(--sky) 0%,var(--mint) 58%,var(--leaf) 100%)}
+.dbd-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dbd-top h3{font-size:1.8rem;margin:0;font-weight:600}
+.flame{font-weight:700;font-size:1.3rem;color:var(--red);white-space:nowrap}
+.dbd-month{display:flex;justify-content:space-between;align-items:center;margin:8px 0 10px}
+.wkbtns{display:flex;gap:4px}
+.wkbtns button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.55);color:var(--ink);font-size:1.2rem;line-height:1;cursor:pointer}
+.wkbtns button:disabled{opacity:.35;cursor:default}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wk button{border:0;background:transparent;color:var(--ink);font:inherit;border-radius:16px;padding:8px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.wk .dn{font-size:.82rem}
+.wk .dd{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.wk .dot{width:6px;height:6px;border-radius:50%;margin-top:2px;background:currentColor}
+.wk .dot.none{background:transparent;border:1.5px solid currentColor;opacity:.6}
+.wk .dot.fut{visibility:hidden}
+.wk button[aria-pressed="true"]{background:var(--moss);color:var(--moss-ink)}
+.wk button:disabled{opacity:.4;cursor:default}
+.dbd-sum{margin:14px 2px 2px;font-weight:600}
+.dbd-note{margin:2px 2px 0;font-size:.8rem;color:var(--muted)}
+.ecard{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:14px;margin-top:12px;box-shadow:0 4px 14px rgba(16,40,44,.1)}
+.eic{width:50px;height:50px;flex:none;border-radius:14px;border:3px solid var(--skyb);background:var(--surface);display:grid;place-items:center;font-size:1.5rem}
+.etx{flex:1;min-width:0}
+.etx strong{display:block;line-height:1.3}
+.etx .small{margin-top:2px}
+.echk{flex:none;color:var(--moss)}
+.echk svg{display:block;width:30px;height:30px}
+.eempty{background:var(--surface);border-radius:20px;padding:20px;margin-top:12px;text-align:center;color:var(--muted)}
+.cat{display:grid;grid-template-columns:130px 1fr 80px;gap:10px;align-items:center;margin:8px 0}
+.cat .track{background:var(--lichen);border-radius:99px;height:12px;overflow:hidden}
+.cat .fill{background:var(--bar);height:100%}
+.cat .v{text-align:right;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.rec h3{margin-bottom:.3em}
+.rec dl{margin:.6em 0;display:grid;grid-template-columns:140px 1fr;gap:4px 12px}
+.rec dt{color:var(--muted)} .rec dd{margin:0}
+@media(max-width:560px){.rec dl{grid-template-columns:1fr}}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.switch{display:flex;align-items:center;gap:10px}
+.switch input{width:auto}
+.empty{padding:26px;text-align:center;border:1.5px dashed var(--line);border-radius:12px;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+footer{padding:20px 0 40px;color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* activity reminders */
+.reminder-times{align-items:end;gap:12px;flex-wrap:wrap}.reminder-times label{display:flex;flex-direction:column;gap:5px;font-size:.9rem;font-weight:600}.reminder-times input{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);min-width:120px}
+.reminder{display:none;background:var(--amber-bg);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--amber);border-radius:12px;padding:14px 16px;margin:0 0 16px}
+.reminder.show{display:block}.reminder p{margin:4px 0 10px}.reminder .actions{margin-top:8px}
+.noon-reminder{display:none;background:var(--lichen);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 16px}.noon-reminder.show{display:block}.noon-reminder[hidden]{display:none!important}.noon-reminder p{margin:4px 0 8px}
+/* auth, menu, profile, streak */
+#auth{display:none;padding:40px 0}
+body:not(.in) #auth{display:block}
+body:not(.in) header.top,body:not(.in) main,body:not(.in) footer{display:none}
+.authcard{max-width:440px;margin:0 auto}
+.burger{background:transparent;border:0;padding:9px;border-radius:8px;cursor:pointer;display:grid;gap:4px}
+.burger span{display:block;width:22px;height:2.5px;background:#f3f7f5;border-radius:2px}
+.chip{background:rgba(255,255,255,.14);color:#f3f7f5;border:0;border-radius:99px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer}
+.avatar{width:36px;height:36px;border-radius:50%;border:0;background:#dcebe1;color:#10282c;font:inherit;font-weight:700;cursor:pointer;display:grid;place-items:center;flex:none}
+.avatar.lg{width:64px;height:64px;font-size:1.6rem;cursor:default}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:15}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(300px,86vw);background:var(--surface);color:var(--ink);z-index:20;padding:16px;display:flex;flex-direction:column;gap:10px;transform:translateX(-100%);visibility:hidden;transition:transform .2s,visibility .2s;overflow-y:auto}
+.drawer.open{transform:none;visibility:visible}
+.dwho{display:flex;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.drawer nav{flex-direction:column;gap:2px}
+.drawer nav button{color:var(--ink);text-align:left;width:100%}
+.drawer nav button[aria-current="page"]{background:var(--lichen);color:var(--ink)}
+.prof{display:flex;gap:14px;align-items:center}
+.prog{background:var(--lichen);border-radius:99px;height:10px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--moss)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.bdg{padding:6px 12px;border-radius:99px;border:1.5px dashed var(--line);color:var(--muted);font-size:.85rem}
+.bdg.got{background:var(--lichen);color:var(--ink);border:1.5px solid var(--moss);font-weight:600}
+.pcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:420px}
+.pcal div{aspect-ratio:1;border-radius:8px;display:grid;place-items:center;font-size:.72rem;border:1.5px dashed var(--line);color:var(--muted)}
+.pcal .on{background:var(--moss);color:var(--moss-ink);border:1.5px solid var(--moss)}
+.pcal .today{outline:2px solid var(--ink);outline-offset:1px}
+.grp{margin-top:14px}
+.gh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 10px;background:var(--lichen);border-radius:8px}
+.gh span{color:var(--muted);font-size:.85rem}
+.ent{display:flex;justify-content:space-between;gap:10px;padding:6px 10px;border-bottom:1px solid var(--line)}
+
+/* Carbon Diary identity + Firebase Authentication */
+.brand-logo{width:34px;height:34px;object-fit:cover;border-radius:9px;flex:none;background:#0b3f1d}
+.hero-img{object-fit:cover;border-radius:22px;box-shadow:0 8px 24px rgba(8,48,24,.16)}
+.authcard{text-align:left;overflow:hidden}
+.auth-brand{text-align:center;margin:0 auto 20px}
+.auth-brand img{width:112px;height:112px;object-fit:cover;border-radius:25px;display:block;margin:0 auto 12px}
+.auth-brand h1{margin:0;color:var(--forest)}
+.auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.auth-actions .btn{width:100%}
+.auth-help{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.auth-link{background:none;border:0;padding:4px 0;color:var(--moss);font:inherit;font-weight:600;cursor:pointer}
+.auth-note{font-size:.82rem;color:var(--muted);margin-top:14px}
+@media(max-width:480px){.auth-actions{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<section id="auth"><div class="wrap"><div class="card authcard">
+  <div class="auth-brand"><img src="assets/carbon-diary-logo.png" alt="Carbon Diary logo"><h1>Welcome to Carbon Diary</h1><p class="muted">Track · Reduce · Go Green</p></div>
+  <p>Sign in or create an account to access your personal carbon diary.</p>
+  <label for="a-name">Name <span class="muted small">(for new accounts)</span></label><input id="a-name" autocomplete="name" placeholder="Your name">
+  <label for="a-email">Email</label><input id="a-email" type="email" autocomplete="email" placeholder="you@example.com">
+  <label for="a-pass">Password</label><input id="a-pass" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')signIn()">
+  <p id="a-err" class="small" role="alert" aria-live="polite" style="color:var(--red)"></p>
+  <div class="auth-actions"><button class="btn" type="button" onclick="signIn()">Sign in</button><button class="btn alt" type="button" onclick="signUp()">Create account</button></div>
+  <div class="auth-help"><button class="auth-link" type="button" onclick="resetPassword()">Forgot password?</button></div>
+  <p class="auth-note">Your account is secured by Firebase Authentication. Carbon Diary activity logs remain stored locally in this browser; no database is connected.</p>
+</div></div></section>
+<header class="top">
+  <div class="wrap">
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer" onclick="openMenu()"><span></span><span></span><span></span></button>
+    <div class="brand"><img class="brand-logo" src="assets/carbon-diary-logo.png" alt="">Carbon Diary</div>
+    <button class="aboutlink" onclick="go('about')">About</button>
+    <button class="chip" id="chip" onclick="go('profile')"></button>
+    <button class="avatar" id="h-av" aria-label="Open your profile" onclick="go('profile')"></button>
+  </div>
+</header>
+<div class="scrim" id="scrim" hidden onclick="closeMenu()"></div>
+<aside class="drawer" id="drawer" aria-label="Menu">
+  <div class="dwho"><div class="avatar lg" id="d-av" aria-hidden="true"></div><div><strong id="d-name"></strong><div class="muted small" id="d-mail"></div></div></div>
+  <nav id="nav" aria-label="Main">
+    <button data-v="profile">Profile and streak</button>
+    <button data-v="home">Home</button>
+    <button data-v="dash">Dashboard</button>
+    <button data-v="log">Log activity</button>
+    <button data-v="hist">History</button>
+    <button data-v="recs">Recommendations</button>
+    <button data-v="about">About and method</button>
+  </nav>
+  <button class="btn alt" style="margin-top:auto" onclick="signOut()">Sign out</button>
+</aside>
+
+<main class="wrap">
+<div id="missedReminder" class="reminder" role="status" aria-live="polite"></div>
+<div id="noonReminder" class="noon-reminder" role="status" aria-live="polite">
+<strong>⏰ Activity reminders</strong>
+<p id="reminderSummary">Choose when CarbonDiary should remind you to log an activity. Reminders stop for the day after you save an activity.</p>
+<div id="reminderSettings">
+<div class="row reminder-times"><label>Reminder 1 <input id="reminderTime1" type="time" value="08:00"></label><label>Reminder 2 <input id="reminderTime2" type="time" value="12:00"></label><label>Reminder 3 <input id="reminderTime3" type="time" value="20:00"></label></div>
+<div class="actions"><button class="btn" type="button" onclick="saveReminderSettings()">Save reminder settings</button><button class="btn alt" type="button" onclick="enableNoonReminders()">Enable browser notifications</button></div>
+</div>
+<div id="reminderSaved" hidden><p class="small">Reminder settings saved.</p><button class="btn alt" type="button" onclick="editReminderSettings()">Edit reminder times</button> <button class="btn alt" type="button" onclick="enableNoonReminders()">Enable browser notifications</button></div>
+<div class="actions"><button class="btn alt" type="button" onclick="openTodayLog()">Log today’s activity</button></div>
+<p class="small muted" id="noonStatus">Save your preferred times and allow notifications when prompted. CarbonDiary must remain open in this browser for scheduled reminders.</p></div>
+
+<!-- HOME -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <img class="hero-img" src="carbondiary-logo.png" alt="Carbon Diary logo" width="154" height="154">
+      <h1>Small Actions. Measurable Impact.</h1>
+      <p class="lead">Track your everyday activities and discover how your choices affect the environment.</p>
+      <button class="btn cta" onclick="go('log')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>Log Activity</button>
+      <button class="linkbtn" onclick="loadSample()">New here? Load sample data to try it</button>
+      <hr>
+      <h2>What can you track?</h2>
+      <div class="tracks">
+        <button onclick="startLog('transport')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg><span>Travel</span></button>
+        <button onclick="startLog('food')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg><span>Food</span></button>
+        <button onclick="startLog('energy')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg><span>Energy</span></button>
+        <button onclick="startLog('waste')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 7.196 9.5 3.1 10.598"/><path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/><path d="m13.378 9.633 4.096 1.098 1.097-4.096"/></svg><span>Waste</span></button>
+        <button onclick="startLog('other')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg><span>Others</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="view" id="v-dash">
+  <div class="card">
+    <div class="row">
+      <div>
+        <h2>Your estimated footprint</h2>
+        <div class="big" id="d-total">0.00<span>kg CO2e</span></div>
+        <p class="small muted" id="d-sub"></p>
+      </div>
+      <div>
+        <label for="period">Period</label>
+        <select id="period" onchange="state.period=+this.value;save();renderDash()">
+          <option value="7">Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 30 days</option>
+        </select>
+        <p class="small muted" id="d-complete"></p>
+      </div>
+    </div>
+  </div>
+  <div class="dgrid">
+    <section class="dbd" aria-label="Day by day">
+      <div class="dbd-top"><h3 id="dbd-hello">Hello!</h3><div class="flame" id="dbd-flame"></div></div>
+      <div class="dbd-month"><span id="dbd-month"></span>
+        <div class="wkbtns"><button type="button" id="dbd-prev" aria-label="Previous week" onclick="shiftWeek(-1)">‹</button><button type="button" id="dbd-next" aria-label="Next week" onclick="shiftWeek(1)">›</button></div>
+      </div>
+      <div class="wk" id="dbd-week" role="group" aria-label="Days of the week"></div>
+      <div class="dbd-sum" id="dbd-sum" aria-live="polite"></div>
+      <div class="dbd-note">Filled dot: entries logged. Hollow dot: no entries, which is missing data, not zero emissions.</div>
+      <div id="dbd-list"></div>
+    </section>
+    <div>
+      <div class="card">
+        <h3>By category</h3>
+        <div id="cats"></div>
+      </div>
+      <div class="card">
+        <h3>Latest entries</h3>
+        <div id="d-recent"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOG -->
+<section class="view" id="v-log">
+  <div class="card">
+    <h2 id="logTitle">Log an Activity</h2>
+    <div class="tabs" id="cattabs" role="group" aria-label="Category"></div>
+    <p id="editNote" class="small muted" hidden></p>
+    <form id="form" onsubmit="return false"></form>
+    <div id="preview" class="preview" aria-live="polite"></div>
+    <div class="actions"><button class="btn" id="saveBtn" onclick="saveEntry()">Save Activity</button><button class="btn alt" id="saveBtn2" onclick="saveEntry(true)">Save and add another</button><button class="btn alt" id="cancelEdit" hidden onclick="editId=null;renderForm()">Cancel edit</button></div>
+    <p class="small muted" id="routeNote">Distances come from OpenStreetMap road routes, a free map service. You can always type the kilometers yourself.</p>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="view" id="v-hist">
+  <div class="card">
+    <h2>History</h2>
+    <div class="row">
+      <div><label for="hcat">Category</label><select id="hcat" onchange="renderHist()"></select></div>
+      <div class="row" style="gap:8px"><div><label for="hfrom">From</label><input id="hfrom" type="date" onchange="renderHist()"></div><div><label for="hto">To</label><input id="hto" type="date" onchange="renderHist()"></div></div>
+    </div>
+    <div class="actions"><button class="btn alt" onclick="$('hfrom').value='';$('hto').value='';$('hcat').value='all';renderHist()">Clear filters</button><button class="btn alt" onclick="clearAll()">Delete all my entries</button></div>
+    <p class="small muted" id="hsum" aria-live="polite"></p>
+    <div class="tablewrap" id="hist"></div>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section class="view" id="v-recs">
+  <div class="card">
+    <h2>Recommendations</h2>
+    <p>Each suggestion is triggered by a pattern in your own entries for the selected period. The savings shown are potential savings from a scenario. They are not measured reductions and are never subtracted from your footprint.</p>
+    <div class="switch"><input type="checkbox" id="baseline" onchange="state.baseline=this.checked;save();renderRecs()"><label for="baseline" style="margin:0;font-weight:500">Study mode: baseline week (recommendations hidden)</label></div>
+    <p class="small muted">Researchers use this setting to measure a participant’s normal footprint before recommendations are switched on.</p>
+  </div>
+  <div id="recbox"></div>
+</section>
+
+<!-- PROFILE -->
+<section class="view" id="v-profile">
+  <div class="card prof"><div class="avatar lg" id="p-av" aria-hidden="true"></div><div><h2 id="p-name" style="margin:0"></h2><div class="muted small" id="p-mail"></div></div></div>
+  <div class="card">
+    <h3>Logging streak</h3>
+    <div class="row">
+      <div><div class="big" id="p-cur"></div><p class="small muted" id="p-msg"></p></div>
+      <div><p id="p-best" style="margin-top:0"></p><div class="prog"><i id="p-bar"></i></div><p class="small muted" id="p-next"></p></div>
+    </div>
+  </div>
+  <div class="card" id="profileReminderCard">
+    <h3>⏰ Activity reminders</h3>
+    <p class="small muted" id="profileReminderSummary">Choose times to receive reminders to log your daily activity.</p>
+    <div class="actions" id="profileReminderActions"><button class="btn alt" type="button" onclick="undoShowReminderEditor()">Undo</button></div>
+    <div id="profileReminderEditor" hidden>
+      <div class="row reminder-times"><label>Reminder 1 <input id="profileReminderTime1" type="time" value="08:00"></label><label>Reminder 2 <input id="profileReminderTime2" type="time" value="12:00"></label><label>Reminder 3 <input id="profileReminderTime3" type="time" value="20:00"></label></div>
+      <div class="actions"><button class="btn" type="button" onclick="saveProfileReminderSettings()">Save reminder times</button><button class="btn alt" type="button" onclick="cancelReminderEditor()">Cancel</button><button class="btn alt" type="button" onclick="enableNoonReminders()">Enable browser notifications</button></div>
+      <p class="small muted" id="profileReminderStatus">CarbonDiary must remain open in this browser for scheduled reminders.</p>
+    </div>
+  </div>
+  <div class="card"><h3>Rewards</h3><div class="badges" id="p-badges"></div>
+    <p class="small muted">A reward is earned when your best streak reaches its length. Any entry logged on a day counts for that day.</p></div>
+  <div class="card"><h3>Your last 28 days</h3><div class="pcal" id="p-cal" role="img" aria-label="Calendar of days with entries"></div>
+    <p class="small muted" id="p-reg"></p></div>
+  <div class="card">
+    <h2>Logs and activity history</h2>
+    <div class="row">
+      <div><div style="font-weight:600;margin:12px 0 4px">Group by</div>
+        <div class="tabs"><button id="g-day" onclick="pGroup='day';renderProfile()">Day</button><button id="g-week" onclick="pGroup='week';renderProfile()">Week</button></div></div>
+      <div><label for="p-cat">Category</label>
+        <select id="p-cat" onchange="pCat=this.value;renderProfile()"><option value="all">All</option><option value="transport">Transport</option><option value="food">Food</option><option value="waste">Waste</option><option value="energy">Energy</option></select></div>
+    </div>
+    <div id="p-hist"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="view" id="v-about">
+  <div class="card">
+    <h2>How the estimate works</h2>
+    <p><strong>Emissions (kg CO2e) = activity data × emission factor.</strong> Units are converted first, full precision is kept internally, and rounding happens only on screen.</p>
+    <ul>
+      <li>Private vehicle: distance × trips × factor per vehicle-km ÷ occupants (a round trip counts twice).</li>
+      <li>Jeepney, bus: distance × trips × factor per passenger-km.</li>
+      <li>Food: amount in kg × factor per kg (a serving uses a stated serving size and is marked as estimated).</li>
+      <li>Waste: mass in kg × factor for that waste type and disposal method (a bag count uses a stated kg-per-bag assumption and is marked as estimated).</li>
+      <li>Electricity: kWh × grid factor ÷ household size. Cooking gas: kg × factor.</li>
+      <li>Water: litres × supply factor, plus heating energy when hot water is used. Flights: distance × factor per passenger-km. Hotels: nights × factor per room-night ÷ people sharing the room. Shopping and other activities are not calculated unless you enter an emission value with its source. Entries that cannot be calculated are saved as “Not calculated” and left out of totals.</li>
+      <li>Potential savings = baseline estimated emissions − alternative estimated emissions.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Emission factors used in this prototype</h3>
+    <p class="small">Factors with a named source are marked "sourced, not yet verified". Factors marked "demo, unverified" are still placeholders. Several sourced values come from the UK or from global averages, not from the Philippines, as stated in the Source column.</p>
+    <div class="tablewrap" id="ftable"></div>
+  </div>
+  <div class="card">
+    <h3>Limits of this prototype</h3>
+    <ul class="small">
+      <li>Sign-in is a prototype (no password). Accounts, entries, and streaks are saved only in this browser. There is no consent form or server.</li>
+      <li>Entries can be added, edited, and deleted. Entries saved before editing was added must be re-entered to edit them.</li>
+      <li>No emission factor here has been independently verified. Some have a cited source (shown in the table above); the rest are demonstration placeholders. Several cited values are UK or global figures, not Philippine measurements.</li>
+      <li>Distance is typed in; route lookup and GPS are not included.</li>
+      <li>Recommendation rules cover private-vehicle trips, beef and pork meals, and disposal of biodegradable and recyclable waste. Thresholds are adjustable and are not scientific values.</li>
+      <li>The full system adds secure login, an admin page for verified factors, a pseudonymous research export, and automated tests of every formula.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap">CarbonDiary prototype. Some factors are sourced and some are placeholders (see the factor table). Not for research use until factors are verified.</div></footer>
+
+<script>
+"use strict";
+/* ---------- FACTORS (kg CO2e per unit). Entries with src: are from the cited source, not yet verified. Entries without src: are demo placeholders. ---------- */
+const F = {
+  T_motorcycle:{label:"Motorcycle",cat:"transport",basis:"vehicle_km",v:0.10},
+  T_car:{label:"Private car",cat:"transport",basis:"vehicle_km",v:0.167,src:"UK data quoted by DOTr (Tribune, 7 Sep 2026); not a Philippine measurement"},
+  T_tricycle:{label:"Tricycle",cat:"transport",basis:"vehicle_km",v:0.0937,src:"Derived: IPCC 2006 gasoline CO2 factor (2.287 kg/L) / 24.41 km/L from Biona, Culaba & Purvis (2007), two-stroke tricycles, Metro Manila. CO2 only"},
+  T_jeepney:{label:"Jeepney",cat:"transport",basis:"passenger_km",v:0.06},
+  T_bus:{label:"Bus",cat:"transport",basis:"passenger_km",v:0.06875,src:"UK Government GHG conversion factors 2025, local London bus (via Climatiq); not Philippine"},
+  T_active:{label:"Walking or bicycle",cat:"transport",basis:"passenger_km",v:0},
+  F_beef:{label:"Beef",cat:"food",basis:"kg",v:99.48,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data; beef herd",serving:0.15},
+  F_pork:{label:"Pork",cat:"food",basis:"kg",v:12.31,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data",serving:0.15},
+  F_chicken:{label:"Chicken",cat:"food",basis:"kg",v:9.87,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data; poultry meat",serving:0.15},
+  F_fish:{label:"Fish",cat:"food",basis:"kg",v:13.63,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data; farmed fish only",serving:0.15},
+  F_egg:{label:"Eggs",cat:"food",basis:"kg",v:4.67,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data",serving:0.06},
+  F_rice:{label:"Rice",cat:"food",basis:"kg",v:4.45,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data",serving:0.2},
+  F_veg:{label:"Vegetables",cat:"food",basis:"kg",v:2,serving:0.1},
+  F_fruit:{label:"Fruit",cat:"food",basis:"kg",v:1,serving:0.12},
+  F_bread:{label:"Bread and baked goods",cat:"food",basis:"kg",v:1.5,serving:0.06},
+  F_dairy:{label:"Cheese, yogurt, butter",cat:"food",basis:"kg",v:8,serving:0.05},
+  F_water:{label:"Water",cat:"food",basis:"kg",v:0.0005,serving:0.25,liquid:true},
+  F_milk:{label:"Milk",cat:"food",basis:"kg",v:3.15,src:"Poore & Nemecek (2018), Science 360:987-992, via Our World in Data; global average, 2010 data",serving:0.25,liquid:true},
+  F_drink:{label:"Soft drink or juice",cat:"food",basis:"kg",v:0.5,serving:0.25,liquid:true},
+  F_coffee:{label:"Coffee or tea",cat:"food",basis:"kg",v:0.3,serving:0.25,liquid:true},
+  W_bio_dump:{label:"Biodegradable, dumpsite or landfill",cat:"waste",basis:"kg",v:0.7},
+  W_bio_compost:{label:"Biodegradable, composted",cat:"waste",basis:"kg",v:0.1},
+  W_rec_dump:{label:"Recyclable, dumpsite or landfill",cat:"waste",basis:"kg",v:0.4},
+  W_rec_recycled:{label:"Recyclable, recycled",cat:"waste",basis:"kg",v:0.05},
+  W_res_dump:{label:"Residual, dumpsite or landfill",cat:"waste",basis:"kg",v:0.5},
+  W_haz_special:{label:"Hazardous, special handling",cat:"waste",basis:"kg",v:1.0},
+  E_grid:{label:"Grid electricity",cat:"energy",basis:"kWh",v:0.7797,src:"DOE National Grid Emission Factor, Mindanao grid, simple operating margin, 2015-2017"},
+  E_lpg:{label:"Cooking gas (LPG)",cat:"energy",basis:"kg",v:2.985,src:"IPCC 2006 default (63,100 kg CO2/TJ x 47.3 TJ/Gg); CO2 only"}
+};
+[["bio","Biodegradable",.7],["rec","Recyclable",.4],["res","Residual",.5]].forEach(([t,n,v])=>{
+  [["bin","trash bin, collected",1],["roadside","thrown on the roadside",1.3],["burn","burned in the open",1.5]].forEach(([k,l,m])=>{ F["W_"+t+"_"+k]={label:n+", "+l,cat:"waste",basis:"kg",v:Math.round(v*m*100)/100}; });
+});
+F.W_rec_junk={label:"Recyclable, sold to a junk shop",cat:"waste",basis:"kg",v:0.05};
+const KG_PER_BAG = 3; // demo assumption
+Object.assign(F,{
+  T_train:{label:"Train, MRT or LRT",cat:"transport",basis:"passenger_km",v:0.035,src:"UK data quoted by DOTr (Tribune, 7 Sep 2026); not a Philippine measurement"},
+  T_airplane:{label:"Airplane",cat:"transport",basis:"passenger_km",v:0.15},
+  T_taxi:{label:"Taxi or ride-hailing",cat:"transport",basis:"vehicle_km",v:0.20},
+  T_bicycle:{label:"Bicycle",cat:"transport",basis:"passenger_km",v:0},
+  T_walking:{label:"Walking",cat:"transport",basis:"passenger_km",v:0},
+  A_dom:{label:"Domestic flight",cat:"travel",basis:"passenger_km",v:0.22928,src:"UK Government GHG conversion factors 2025, UK domestic flight (via BNA report); short UK hops, not Philippine routes"},
+  A_int:{label:"International flight",cat:"travel",basis:"passenger_km",v:0.12786,src:"UK Government GHG conversion factors 2025, short-haul international (via BNA report)"},
+  A_hotel:{label:"Hotel or resort stay",cat:"travel",basis:"room_night",v:20},
+  H_water:{label:"Water supply and treatment",cat:"water",basis:"litre",v:0.0005}
+});
+const APPL={fan:["Electric fan",50],aircon:["Air conditioner",1000],fridge:["Refrigerator",150],tv:["Television",100],light:["LED light",10],ricecooker:["Rice cooker",700],stove:["Electric stove or induction",1500],washer:["Washing machine",500],iron:["Electric iron",1000],heater:["Water heater",3000],computer:["Computer or laptop",60],microwave:["Microwave oven",1000],other:["Other appliance (enter watts)",0]};
+const CHG={phone:["Mobile phone",10],tablet:["Tablet",15],laptop:["Laptop",60],bank:["Power bank",10],ebike:["Electric bike or scooter",300],other:["Other device (enter watts)",0]};
+const SOLID=[["serving","Servings"],["g","Grams"],["kg","Kilograms"],["oz","Ounces"],["lb","Pounds"],["tbsp","Tablespoons"],["tsp","Teaspoons"],["cup","Cups"]];
+const LIQ=[["serving","Servings (1 glass)"],["ml","Millilitres"],["l","Litres"],["cup","Cups"],["glass","Glasses"],["tbsp","Tablespoons"],["tsp","Teaspoons"]];
+const QLAB={serving:"Number of servings",g:"Weight (grams)",kg:"Weight (kilograms)",oz:"Weight (ounces)",lb:"Weight (pounds)",ml:"Volume (millilitres)",l:"Volume (litres)",cup:"Number of cups",glass:"Number of glasses",tbsp:"Number of tablespoons",tsp:"Number of teaspoons"};
+const ULAB={serving:"serving(s)",g:"g",kg:"kg",oz:"oz",lb:"lb",ml:"ml",l:"L",tsp:"tsp",tbsp:"tbsp",cup:"cup(s)",glass:"glass(es)"};
+const UKG={g:.001,kg:1,oz:.02835,lb:.45359,ml:.001,l:1,tsp:.005,tbsp:.015,cup:.24,glass:.25};
+const KW=[[/beef|steak|burger|tapa/,"beef"],[/pork|lechon|bacon|sisig/,"pork"],[/chicken|manok/,"chicken"],[/fish|seafood|shrimp|tuna|bangus|tilapia|squid|crab/,"fish"],[/egg|itlog/,"egg"],[/rice|kanin|sinangag|lugaw/,"rice"],[/veg|salad|gulay|cabbage|kangkong/,"veg"],[/fruit|banana|mango|apple|orange|papaya/,"fruit"],[/bread|pandesal|pan de sal|cake|biscuit|pastry/,"bread"],[/cheese|yogurt|yoghurt|butter/,"dairy"],[/milk|gatas/,"milk"],[/water|tubig/,"water"],[/soda|soft drink|juice|coke|energy drink|iced tea/,"drink"],[/coffee|tea|kape/,"coffee"]];
+const LIM = {trip:2000, food:50, waste:500, bags:100, kwh:20000, lpg:1000, hh:30, occ:100};
+
+/* ---------- state (browser storage with in-memory fallback) ---------- */
+let state = {entries:[], recs:{}, baseline:false, period:7, user:null};
+const KEY = "carbontrace-prototype-v1";
+function save(){ if(!state.user) return; try{ localStorage.setItem(KEY+":"+(state.user.uid||state.user.email), JSON.stringify(state)); }catch(e){} renderChip(); }
+function load(){ /* User data is loaded after Firebase confirms the signed-in account. */ }
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const todayStr = () => iso(new Date());
+const fmt = x => (Math.round((x+Number.EPSILON)*100)/100).toFixed(2);
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : "e"+Date.now()+Math.random().toString(16).slice(2));
+function daysList(n){ const out=[]; const t=new Date(); for(let i=n-1;i>=0;i--){ const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()-i); out.push(iso(d)); } return out; }
+
+/* ---------- calculation (same rules as the tested engine) ---------- */
+function chk(name,v,max,errs){
+  if(v===undefined||v===null||v===""||(typeof v==="number"&&isNaN(v))){ errs.push(name+" is missing. Missing is not the same as zero; enter 0 if the amount was zero."); return false; }
+  if(typeof v!=="number"||!isFinite(v)){ errs.push(name+" must be a valid number."); return false; }
+  if(v<0){ errs.push(name+" cannot be negative."); return false; }
+  if(v>max){ errs.push(name+" ("+v+") is above the plausible maximum of "+max+". Check the value and unit."); return false; }
+  return true;
+}
+function chkCount(name,v,max,errs){
+  if(v===undefined||v===null||v===""||(typeof v==="number"&&isNaN(v))){ errs.push(name+" is required."); return false; }
+  if(!Number.isInteger(v)||v<1){ errs.push(name+" must be a whole number of at least 1."); return false; }
+  if(v>max){ errs.push(name+" is above the plausible maximum of "+max+"."); return false; }
+  return true;
+}
+function calcTransport(i){
+  const e=[], f=F["T_"+i.mode]; if(!f) return {ok:false,errors:["Choose a transport mode."]};
+  chk("Distance (km)",i.dist,LIM.trip,e);
+  if(f.basis==="vehicle_km") chkCount("Number of people in the vehicle (including the driver)",i.occ,LIM.occ,e);
+  if(e.length) return {ok:false,errors:e};
+  const legs=i.round?2:1, trip=i.dist*legs*f.v, as=[(i.round?"Round trip":"One-way trip")+" of "+i.dist+" km each way."];
+  let kg;
+  if(f.basis==="vehicle_km"){ kg=trip/i.occ; as.push("Vehicle emissions shared equally among "+i.occ+" occupant(s)."); }
+  else { kg=trip; as.push("Factor is per passenger-km; no sharing applied."); }
+  return {ok:true,kg,est:false,code:"T_"+i.mode,assumptions:as,desc:f.label+", "+i.dist+" km"+(i.round?" round trip":" one-way"),meta:{mode:i.mode,dist:i.dist,round:!!i.round,occ:i.occ||null,legs}};
+}
+function calcFood(i){
+  const e=[], f=F["F_"+i.item]; if(!f) return {ok:false,errors:["Choose a food or drink category."]};
+  chk(QLAB[i.unit]||"Amount",i.qty,100000,e);
+  if(e.length) return {ok:false,errors:e};
+  let est=true, as=[], per;
+  if(i.unit==="serving"){ per=f.serving; as.push("Serving size assumed to be "+per+" kg"+(f.liquid?" (about one glass)":"")+" (demo value)."); }
+  else { per=UKG[i.unit]; est=["tsp","tbsp","cup","glass"].includes(i.unit); if(est) as.push("1 "+ULAB[i.unit].replace("(s)","").replace("(es)","")+" counted as "+Math.round(per*1000)+(f.liquid?" ml":" g")+" (rough demo value; real weight varies by food)."); }
+  if(f.liquid) as.push("Liquids counted as 1 kg per litre.");
+  if(i.name) as.push("“"+i.name+"” is matched to the category "+f.label+".");
+  const kg=i.qty*per;
+  if(kg>LIM.food) return {ok:false,errors:["Amount ("+fmt(kg)+" kg) is above the plausible maximum of "+LIM.food+" kg. Check the value and unit."]};
+  return {ok:true,kg:kg*f.v,est,code:"F_"+i.item,assumptions:as,desc:(i.name?i.name+" ("+f.label+")":f.label)+", "+i.qty+" "+ULAB[i.unit],meta:{item:i.item,kg}};
+}
+function calcWaste(i){
+  const e=[], key=i.type+"_"+i.treat, f=F["W_"+key]; if(!f) return {ok:false,errors:["Choose a waste type and disposal method."]};
+  let kg, est=false, as=[];
+  if(i.by==="kg"){ if(chk("Waste mass (kg)",i.val,LIM.waste,e)) kg=i.val; }
+  else { if(chk("Number of bags",i.val,LIM.bags,e)){ kg=i.val*KG_PER_BAG; est=true; as.push("Mass estimated as "+i.val+" bag(s) × "+KG_PER_BAG+" kg per bag (demo assumption)."); } }
+  if(e.length) return {ok:false,errors:e};
+  return {ok:true,kg:kg*f.v,est,code:"W_"+key,assumptions:as,desc:f.label+", "+fmt(kg)+" kg",meta:{type:i.type,treat:i.treat,kg}};
+}
+function calcEnergy(i){
+  const e=[];
+  if(i.kind==="app"||i.kind==="charge"){
+    const ch=i.kind==="charge", d=(ch?CHG:APPL)[i.dev]; if(!d) return {ok:false,errors:["Choose a "+(ch?"device":"appliance")+"."]};
+    chk(ch?"Hours of charging":"Hours of use",i.val,24,e);
+    let w=d[1]; if(i.dev==="other"){ if(chk("Power rating (watts)",i.watts,20000,e)) w=i.watts; }
+    if(e.length) return {ok:false,errors:e};
+    const kwh=w*i.val/1000;
+    return {ok:true,kg:kwh*F.E_grid.v,est:i.dev!=="other",code:"E_grid",assumptions:["Power "+(i.dev==="other"?"entered as ":"assumed to be a typical ")+w+" W"+(i.dev==="other"?".":" (demo value; real devices vary)."),"Energy = watts × hours ÷ 1000 = "+fmt(kwh)+" kWh, converted with the grid factor. Not shared with others."],desc:d[0]+", "+i.val+" h "+(ch?"charging":"in use")+" ("+fmt(kwh)+" kWh)",meta:{kind:i.kind,dev:i.dev}};
+  }
+  if(i.kind==="grid"){
+    chk("Electricity (kWh)",i.val,LIM.kwh,e); chkCount("Household size",i.hh,LIM.hh,e);
+    if(e.length) return {ok:false,errors:e};
+    return {ok:true,kg:i.val*F.E_grid.v/i.hh,est:false,code:"E_grid",assumptions:["Electricity bill shared equally among "+i.hh+" household member(s)."],desc:"Electricity, "+i.val+" kWh (household of "+i.hh+")",meta:{kind:"grid"}};
+  }
+  chk("Cooking gas (kg)",i.val,LIM.lpg,e);
+  if(e.length) return {ok:false,errors:e};
+  return {ok:true,kg:i.val*F.E_lpg.v,est:false,code:"E_lpg",assumptions:["Amount entered in kilograms."],desc:"Cooking gas, "+i.val+" kg",meta:{kind:"lpg"}};
+}
+
+/* ---------- navigation ---------- */
+function go(v){ closeMenu(); if(v!=="log") editId=null;
+  document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll("#nav button").forEach(b=>{ if(b.dataset.v===v) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  if(v==="profile") renderProfile(); if(v==="dash") renderDash(); if(v==="hist") renderHist(); if(v==="recs") renderRecs(); if(v==="log"){ renderForm(); renderMissedReminder(); } else dismissMissedReminder();
+  window.scrollTo(0,0);
+}
+document.getElementById("nav").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(b.dataset.v); });
+
+/* ---------- log form ---------- */
+let curCat = "transport", curKind = "grid";
+const CATS = [["transport","Transportation"],["food","Food and drinks"],["energy","Energy use"],["waste","Waste management"],["shopping","Shopping and purchases"],["water","Water use"],["travel","Travel and accommodation"],["other","Other activities"]];
+const BIN=["bin","Thrown in a trash bin (collected)"], DMP=["dump","Dumpsite or landfill"], RDS=["roadside","Thrown on the roadside or open ground"], BRN=["burn","Burned in the open"];
+const WASTE_TREAT = {bio:[BIN,DMP,["compost","Composted"],RDS,BRN], rec:[BIN,DMP,["recycled","Recycled"],["junk","Sold to a junk shop"],RDS,BRN], res:[BIN,DMP,RDS,BRN], haz:[["special","Special handling"]]};
+const WASTE_TYPES = [["bio","Biodegradable"],["rec","Recyclable"],["res","Residual (non-biodegradable)"],["haz","Hazardous"]];
+const opt = (arr,sel)=>arr.map(a=>`<option value="${a[0]}"${a[0]===sel?" selected":""}>${esc(a[1])}</option>`).join("");
+
+async function geo(q){
+  const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q)), j=await r.json();
+  if(!j.length) throw new Error("Could not find “"+q+"”. Try adding the town or city.");
+  return [j[0].lon,j[0].lat];
+}
+async function findRoute(){
+  const a=$("f-from").value.trim(), b=$("f-to").value.trim(), m=$("routeMsg"), btn=$("routeBtn");
+  if(!a||!b){ m.textContent="Enter both a starting place and a destination."; return; }
+  btn.disabled=true; m.textContent="Looking up the route…";
+  try{
+    const p=await geo(a), q=await geo(b);
+    const r=await fetch("https://router.project-osrm.org/route/v1/driving/"+p.join(",")+";"+q.join(",")+"?overview=false"), j=await r.json();
+    if(!j.routes||!j.routes.length) throw new Error("No road route found between these places.");
+    const km=Math.round(j.routes[0].distance/100)/10;
+    $("f-dist").value=km; preview();
+    m.textContent="Road distance: "+km+" km one way. Walking or cycling paths may be shorter. You can still edit the distance.";
+    const g=$("gmap"); g.href="https://www.google.com/maps/dir/?api=1&travelmode=driving&origin="+encodeURIComponent(a)+"&destination="+encodeURIComponent(b); g.hidden=false;
+  }catch(err){ m.textContent = err.message&&err.message.startsWith("Could not")||err.message&&err.message.startsWith("No road") ? err.message : "Couldn’t reach the map service. Check your connection, or type the distance in kilometers."; }
+  btn.disabled=false;
+}
+/* ---------- log form: categories, dynamic fields, calculation ---------- */
+let editId=null;
+const kv=e=>typeof e.kg==="number"?e.kg:0, isCalc=e=>typeof e.kg==="number", kgTxt=e=>isCalc(e)?fmt(e.kg)+" kg CO2e":"Not calculated";
+const nowT=()=>{ const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+function fillCatSelects(){ const o='<option value="all">All</option>'+CATS.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join(""); $("hcat").innerHTML=o; $("p-cat").innerHTML=o; }
+const TMODES=[["car","Car"],["motorcycle","Motorcycle"],["bus","Bus"],["jeepney","Jeepney"],["train","Train or MRT/LRT"],["airplane","Airplane"],["taxi","Taxi or ride-hailing service"],["bicycle","Bicycle"],["walking","Walking"],["other","Other transportation"]];
+const FUELS=[["unknown","Not sure"],["gasoline","Gasoline"],["diesel","Diesel"],["lpg","LPG"],["hybrid","Hybrid"],["electric","Electric"]];
+const FCATS=[["","Not sure (skip)"],["meat","Meat"],["seafood","Seafood"],["vegetables","Vegetables"],["fruits","Fruits"],["dairy","Dairy"],["grains","Grains (rice, bread, noodles)"],["beverages","Beverages"],["plant","Plant-based meal"],["other","Other"]];
+const FCAT={seafood:"fish",vegetables:"veg",fruits:"fruit",dairy:"dairy",grains:"rice",beverages:"drink",plant:"veg"};
+const MEALS=[["","Not part of a meal"],["Breakfast","Breakfast"],["Lunch","Lunch"],["Dinner","Dinner"],["Snack","Snack"]];
+const KWF=[[/\b(tea|shake|shakes|smoothie|juice|soda|cola|lemonade|drink)\b/,"drink"],[/coffee|latte|espresso|cappuccino/,"coffee"],[/\bmilk\b/,"milk"],[/\bwater\b/,"water"]].concat(KW);
+const ESRC=[["aircon","Air conditioner"],["fan","Electric fan"],["light","Lights"],["computer","Computer or laptop"],["tv","Television"],["fridge","Refrigerator"],["washer","Washing machine"],["cook","Cooking appliance (electric)"],["oapp","Other appliance"],["lpg","LPG (cooking gas)"],["ofuel","Other household fuel"]];
+const EW={aircon:1000,fan:50,light:10,computer:60,tv:100,fridge:150,washer:500,cook:1000,oapp:""};
+const WTYPES2=[["bio","Food scraps"],["plastic","Plastic waste"],["paper","Paper and cardboard"],["glass","Glass"],["metal","Metal or cans"],["general","General waste"],["other","Other waste"]];
+const WFAM={bio:"bio",plastic:"rec",paper:"rec",glass:"rec",metal:"rec",general:"res"};
+const wTreatOpts=t=>(WFAM[t]?WASTE_TREAT[WFAM[t]]:[]).concat([["other","Other method (not calculated)"]]);
+const SCATS=[["clothes","Clothes and shoes"],["electronics","Electronics"],["school","School supplies and paper"],["care","Personal care products"],["household","Household items"],["other","Other purchases"]];
+const WACT=[["shower","Bathing or showering",9],["laundry","Laundry",8],["dish","Dishwashing",6],["clean","Cleaning",6],["other","Other water use",6]];
+const TRV=[["hotel","Hotel or resort stay"],["dom","Domestic flight"],["int","International flight"],["oacc","Other accommodation"]];
+const HOT_SHARE=0.5;
+const nv=(o,k)=>{ const v=o[k]; return (v===undefined||v==="")?undefined:parseFloat(v); };
+const PEND=(reason,desc,meta)=>({ok:true,kg:null,pending:true,reason,est:false,code:null,assumptions:[],desc,meta:meta||{}});
+/* form markup helpers */
+const U=(id,u,x)=>`<div class="iu"><input id="${id}" type="number" min="0" step="any" inputmode="decimal" ${x||""}><span>${u}</span></div>`;
+const FL=(id,t,inner,w,hide)=>`<div${w?` id="${w}"`:""}${hide?" hidden":""}><label for="${id}">${t}</label>${inner}</div>`;
+const SL=(id,arr)=>`<select id="${id}">${opt(arr,"")}</select>`;
+const TX=(id,ph)=>`<input id="${id}" placeholder="${ph||""}" autocomplete="off">`;
+const DT=t=>`<div class="row">${FL("f-date","Date",`<input id="f-date" type="date" max="${todayStr()}">`)}${t===false?"<div></div>":FL("f-time","Time",`<input id="f-time" type="time">`)}</div>`;
+const KNOWN=`<details class="known"><summary>I have an emission value from a source (optional)</summary><div class="row">${FL("f-known","Emissions (kg CO2e)",U("f-known","kg CO2e"))}${FL("f-ksrc","Source of the value",TX("f-ksrc","e.g. product label or maker’s website"))}</div><p class="small muted">Without a value and a source, this entry is saved as “Not calculated”.</p></details>`;
+const FORMS={
+  transport:()=>DT()+`<div class="row">${FL("f-mode","Transportation type",SL("f-mode",TMODES))}${FL("f-dist","Distance one way (km)",U("f-dist","km"))}</div>
+    <div class="row"><div><label for="f-from">Starting place (optional)</label><input id="f-from" placeholder="e.g. Maramag Public Market" autocomplete="off"></div><div><label for="f-to">Destination (optional)</label><input id="f-to" placeholder="e.g. Valencia City Hall" autocomplete="off"></div></div>
+    <div class="actions" style="align-items:center"><button type="button" class="btn alt" id="routeBtn" onclick="findRoute()">Find road distance</button><a id="gmap" class="small" target="_blank" rel="noopener" hidden>Check this route in Google Maps</a></div><p id="routeMsg" class="small muted" aria-live="polite"></p>
+    <div class="row">${FL("f-fuel","Fuel type",SL("f-fuel",FUELS),"w-fuel",true)}${FL("f-occ","People in the vehicle, including the driver",`<input id="f-occ" type="number" min="1" step="1" value="1">`,"w-occ",true)}</div>
+    ${FL("f-oname","Describe the transportation",TX("f-oname"),"w-oname",true)}
+    <div class="check"><input id="f-round" type="checkbox"><label for="f-round" style="margin:0">Round trip (same route back)</label></div>
+    <p class="small muted" id="w-air" hidden>Flights can also be logged under Travel and accommodation. Log each flight in one place only so it is not counted twice.</p>`,
+  food:()=>DT()+`${FL("f-name","Food or drink name",TX("f-name","e.g. chicken adobo, milk tea, mango shake"))}
+    <div class="row">${FL("f-fcat","Food category (optional)",SL("f-fcat",FCATS))}${FL("f-meal","Part of a meal (optional)",SL("f-meal",MEALS))}</div>
+    <div class="row">${FL("f-qty","Quantity (servings, glasses, or pieces)",U("f-qty","servings",'value="1"'))}${FL("f-g","Portion size per serving, if known",U("f-g","g or ml"))}</div>
+    <p class="small muted">Type anything you ate or drank. Add each item as its own entry; use “Save and add another” to keep the same date, time, and meal.</p>`,
+  energy:()=>DT()+`<div class="row">${FL("f-src","Appliance or energy source",SL("f-src",ESRC))}${FL("f-method","What do you know?",SL("f-method",[["wh","Appliance power (W) and hours used"],["kwh","Electricity consumed (kWh)"]]),"w-method")}</div>
+    <div class="row">${FL("f-kwh","Electricity consumed",U("f-kwh","kWh"),"w-kwh",true)}${FL("f-hh","People sharing this electricity",`<input id="f-hh" type="number" min="1" step="1" value="1">`,"w-hh",true)}</div>
+    <div class="row">${FL("f-watts","Appliance power (editable)",U("f-watts","W"),"w-watts")}${FL("f-hours","Time used",U("f-hours","hours"),"w-hours")}</div>
+    ${FL("f-fuelamt","Cooking gas used",U("f-fuelamt","kg"),"w-lpg",true)}${FL("f-ofname","Fuel and amount (not calculated)",TX("f-ofname","e.g. 2 L kerosene"),"w-ofuel",true)}
+    <p class="small muted">Use either measured kWh or watts × hours for one activity, never both. Default watts are typical demo values.</p>`,
+  waste:()=>DT()+`<div class="row">${FL("f-wtype","Waste type",SL("f-wtype",WTYPES2))}${FL("f-wtreat","Disposal method",`<select id="f-wtreat"></select>`)}</div>${FL("f-wkg","Estimated weight",U("f-wkg","kg"))}`,
+  shopping:()=>DT(false)+`<div class="row">${FL("f-iname","Item name",TX("f-iname","e.g. cotton T-shirt"))}${FL("f-scat","Item category",SL("f-scat",SCATS))}</div>
+    <div class="row">${FL("f-qty","Quantity",U("f-qty","items",'value="1"'))}${FL("f-pinfo","Product information (optional)",TX("f-pinfo","brand, material, size"))}</div>${KNOWN}<p class="small muted">Emissions are never estimated from price.</p>`,
+  water:()=>DT()+`<div class="row">${FL("f-wact","Activity",`<select id="f-wact">${opt(WACT,"")}</select>`)}<div class="check"><input id="f-hot" type="checkbox"><label for="f-hot" style="margin:0">Hot water was used</label></div></div>
+    <div class="row">${FL("f-liters","Water volume, if known",U("f-liters","liters"))}${FL("f-mins","Or duration",U("f-mins","minutes"))}</div><p class="small muted">If you enter a volume, the duration is ignored.</p>`,
+  travel:()=>DT(false)+`${FL("f-ttype","Type of travel or accommodation",SL("f-ttype",TRV))}
+    <div class="row">${FL("f-route","Flight route or place (optional)",TX("f-route","e.g. Manila to Cebu"))}${FL("f-trav","Number of travelers, including you",`<input id="f-trav" type="number" min="1" step="1" value="1">`)}</div>
+    ${FL("f-tdist","Flight distance",U("f-tdist","km"),"w-tdist",true)}${FL("f-nights","Number of nights",U("f-nights","nights"),"w-nights")}
+    <p class="small muted">Flights logged here are not counted under Transportation. Do not log the same flight in both places.</p>`,
+  other:()=>DT()+`${FL("f-oact","Activity name",TX("f-oact"))}${FL("f-odesc","Description (optional)",TX("f-odesc"))}<div class="row">${FL("f-oqty","Quantity (optional)",`<input id="f-oqty" type="number" min="0" step="any" inputmode="decimal">`)}${FL("f-ounit","Unit (optional)",TX("f-ounit","e.g. hours, pieces"))}</div>${KNOWN}`
+};
+/* calculation per category (reuses calcTransport, calcEnergy, calcWaste) */
+function cTransport(o){
+  const mode=o["f-mode"], L=TMODES.find(m=>m[0]===mode)[1], dist=nv(o,"f-dist"), round=!!o["f-round"], legs=round?2:1;
+  if(mode==="other") return PEND("No emission factor for other transportation types in this prototype.",(o["f-oname"]||"").trim()||"Other transportation",{mode,legs});
+  const veh=["car","motorcycle","taxi"].includes(mode), fuel=veh?o["f-fuel"]:null;
+  if(dist===undefined) return PEND("Distance is missing. Add it to calculate.",L,{mode,legs});
+  if(fuel==="electric") return PEND("No electric-vehicle factor in this prototype.",L+", "+dist+" km",{mode,dist,legs});
+  const r=calcTransport({mode,dist,round,occ:veh?nv(o,"f-occ"):null}); if(!r.ok) return r;
+  r.desc=L+", "+dist+" km"+(round?" round trip":" one-way")+(veh&&fuel&&fuel!=="unknown"?", "+fuel:"");
+  if(fuel&&fuel!=="unknown") r.assumptions.push("Fuel type is recorded, but the prototype uses one factor per vehicle type for every fuel.");
+  if(mode==="walking"||mode==="bicycle"){ r.avoided=dist*legs*F.T_car.v; r.avoidNote="Compared with making the same trip alone by private car"; r.assumptions.push("No direct fuel emissions are counted for "+L.toLowerCase()+".","Avoided emissions are a separate estimate and are never subtracted."); }
+  if(mode==="airplane") r.assumptions.push("Log each flight in one place only (here or under Travel and accommodation).");
+  return r;
+}
+function cFood(o){
+  const name=(o["f-name"]||"").trim(); if(!name) return {ok:false,errors:["Type the food or drink you had."]};
+  const qty=nv(o,"f-qty"), g=nv(o,"f-g"), cat=o["f-fcat"], meal=o["f-meal"]||"", e=[];
+  chk("Quantity",qty,200,e); if(g!==undefined) chk("Portion size (g or ml)",g,50000,e); if(e.length) return {ok:false,errors:e};
+  const desc=name+(meal?" ("+meal+")":"")+", "+qty+" serving(s)", m=KWF.find(k=>k[0].test(name.toLowerCase()));
+  let key=null, how="";
+  if(cat==="beverages"&&m&&F["F_"+m[1]]&&F["F_"+m[1]].liquid){ key=m[1]; how="the drink name"; }
+  else if(FCAT[cat]){ key=FCAT[cat]; how="the category you chose"; }
+  else if(m&&F["F_"+m[1]]&&(cat!=="meat"||["beef","pork","chicken","fish"].includes(m[1]))){ key=m[1]; how="the food name"; }
+  if(!key) return PEND("No emission factor matched “"+name+"”. Choose a category if one fits, or save it as pending.",desc,{item:null,kg:0,meal});
+  const f=F["F_"+key], kg=(g!==undefined?g/1000:f.serving)*qty;
+  if(kg>LIM.food) return {ok:false,errors:["Amount ("+fmt(kg)+" kg) is above the plausible maximum of "+LIM.food+" kg. Check the quantity and portion."]};
+  return {ok:true,kg:kg*f.v,est:true,code:"F_"+key,desc,meta:{item:key,kg,meal},assumptions:["Category-level estimate using the "+f.label.toLowerCase()+" factor, matched from "+how+". The whole item is counted as "+f.label.toLowerCase()+"; real emissions depend on ingredients and preparation.",g!==undefined?"Portion entered: "+g+(f.liquid?" ml":" g")+" per serving.":"Portion assumed to be "+Math.round(f.serving*1000)+(f.liquid?" ml":" g")+" per serving (demo value)."]};
+}
+function cEnergy(o){
+  const s=o["f-src"], L=ESRC.find(x=>x[0]===s)[1];
+  if(s==="lpg"){ const k=nv(o,"f-fuelamt"); return k===undefined?PEND("Amount of gas is missing.",L,{kind:"lpg"}):calcEnergy({kind:"lpg",val:k}); }
+  if(s==="ofuel") return PEND("No emission factor for other household fuels in this prototype.",(o["f-ofname"]||"").trim()||"Other household fuel",{kind:"fuel"});
+  if(o["f-method"]==="kwh"){ const k=nv(o,"f-kwh"), hh=nv(o,"f-hh")||1; if(k===undefined) return PEND("kWh is missing.",L+", measured kWh",{src:s,kind:"grid"});
+    const r=calcEnergy({kind:"grid",val:k,hh}); if(!r.ok) return r; r.desc=L+", "+k+" kWh measured"+(hh>1?" (shared by "+hh+")":""); r.meta={kind:"grid",src:s,kwh:k/hh}; return r; }
+  const w=nv(o,"f-watts"), h=nv(o,"f-hours"); if(w===undefined||h===undefined) return PEND("Power (W) and hours of use are both needed.",L,{src:s,kind:"app"});
+  const e=[]; chk("Appliance power (W)",w,20000,e); chk("Hours of use",h,24,e); if(e.length) return {ok:false,errors:e};
+  const kwh=w*h/1000;
+  return {ok:true,kg:kwh*F.E_grid.v,est:true,code:"E_grid",desc:L+", "+w+" W for "+h+" h",meta:{kind:"app",src:s,kwh},assumptions:["Energy = "+w+" W × "+h+" h ÷ 1000 = "+fmt(kwh)+" kWh. Typical device power is an estimate; real devices vary."]};
+}
+function cWaste(o){
+  const t=o["f-wtype"], tl=WTYPES2.find(x=>x[0]===t)[1], tr=o["f-wtreat"], kg=nv(o,"f-wkg"), fam=WFAM[t];
+  const trl=(wTreatOpts(t).find(x=>x[0]===tr)||["",""])[1], desc=tl+", "+(kg!==undefined?kg+" kg":"weight not entered")+", "+trl.toLowerCase();
+  if(!fam||tr==="other") return PEND("No emission factor for "+(!fam?"this waste type":"this disposal method")+" in this prototype.",desc,{type:fam||t,treat:tr,kg:0});
+  if(kg===undefined) return PEND("Weight is missing. Estimate it to calculate.",desc,{type:fam,treat:tr,kg:0});
+  const r=calcWaste({type:fam,treat:tr,by:"kg",val:kg}); if(!r.ok) return r; r.desc=desc;
+  r.assumptions.push(tl+" is counted with the "+({bio:"biodegradable",rec:"recyclable",res:"residual"})[fam]+" factors.");
+  if(["compost","recycled","junk"].includes(tr)){ r.avoided=(F["W_"+fam+"_dump"].v-F["W_"+fam+"_"+tr].v)*kg; r.avoidNote="Compared with dumpsite disposal of the same waste"; r.assumptions.push("Disposal emissions are counted here. The avoided amount is a separate estimate and is never subtracted."); }
+  return r;
+}
+function cKnown(o,desc,meta){
+  const v=nv(o,"f-known"); if(v===undefined) return null; const e=[], src=(o["f-ksrc"]||"").trim(); chk("Emissions (kg CO2e)",v,1e6,e);
+  if(!src) e.push("Name the source of the emission value, such as a product label."); if(e.length) return {ok:false,errors:e};
+  return {ok:true,kg:v,est:false,userValue:true,code:null,desc,meta,assumptions:["Value entered by you from: "+src+". CarbonDiary has not verified it."]};
+}
+function cShop(o){
+  const nm=(o["f-iname"]||"").trim(); if(!nm) return {ok:false,errors:["Enter the item name."]};
+  const q=nv(o,"f-qty"), e=[]; chk("Quantity",q,10000,e); if(e.length) return {ok:false,errors:e};
+  const desc=nm+", "+q+" × ("+SCATS.find(x=>x[0]===o["f-scat"])[1].toLowerCase()+")";
+  return cKnown(o,desc,{})||PEND("No product-specific or documented factor is available, and emissions are never estimated from price.",desc,{});
+}
+function cOther(o){
+  const nm=(o["f-oact"]||"").trim(); if(!nm) return {ok:false,errors:["Enter the activity name."]};
+  const q=nv(o,"f-oqty"), e=[]; if(q!==undefined) chk("Quantity",q,1e7,e); if(e.length) return {ok:false,errors:e};
+  const desc=nm+(q!==undefined?", "+q+" "+(o["f-ounit"]||"").trim():"");
+  return cKnown(o,desc,{})||PEND("No emission factor exists for this activity. Add a sourced emission value if you have one.",desc,{});
+}
+function cWater(o){
+  const a=WACT.find(x=>x[0]===o["f-wact"]), L=nv(o,"f-liters"), mins=nv(o,"f-mins"), hot=!!o["f-hot"];
+  if(L===undefined&&mins===undefined) return PEND("Enter the water volume or how long it ran.",a[1],{act:a[0]});
+  const e=[]; if(L!==undefined) chk("Water volume (L)",L,5000,e); else chk("Duration (minutes)",mins,240,e); if(e.length) return {ok:false,errors:e};
+  const vol=L!==undefined?L:mins*a[2], as=[L!==undefined?"Volume entered by you.":"Volume estimated as "+mins+" min × "+a[2]+" L per minute (demo assumption).","Water supply and treatment: "+F.H_water.v+" kg CO2e per litre (demo placeholder)."];
+  let kg=vol*F.H_water.v;
+  if(hot){ const kwh=vol*HOT_SHARE*0.0233; kg+=kwh*F.E_grid.v; as.push("Hot water: "+HOT_SHARE*100+"% of the volume assumed heated by 20 °C with an electric heater ("+fmt(kwh)+" kWh at the grid factor)."); }
+  if(L!==undefined&&mins!==undefined) as.push("Duration ignored because you entered the volume.");
+  return {ok:true,kg,est:L===undefined||hot,code:"H_water",assumptions:as,desc:a[1]+", "+fmt(vol)+" L"+(hot?", hot water":""),meta:{act:a[0],liters:vol}};
+}
+function cTravel(o){
+  const t=o["f-ttype"], L=TRV.find(x=>x[0]===t)[1], route=(o["f-route"]||"").trim(), trav=nv(o,"f-trav")||1, rt=route?" ("+route+")":"", e=[];
+  chkCount("Number of travelers",trav,100,e);
+  if(t==="dom"||t==="int"){ const d=nv(o,"f-tdist"), desc=L+rt+(d!==undefined?", "+d+" km":""), meta={trip:t,dist:d};
+    if(d===undefined) return PEND("Flight distance is missing. Add it to calculate.",desc,meta);
+    chk("Flight distance (km)",d,25000,e); if(e.length) return {ok:false,errors:e};
+    const k=t==="dom"?"A_dom":"A_int"; return {ok:true,kg:d*F[k].v,est:true,code:k,desc,meta,assumptions:["Emissions are for you as one passenger ("+trav+" traveler(s) recorded).","Flights logged here are not counted under Transportation."]}; }
+  const n=nv(o,"f-nights"), desc=L+rt+(n!==undefined?", "+n+" night(s)":""), meta={trip:t,nights:n};
+  if(t==="oacc") return PEND("No emission factor for this type of accommodation in this prototype.",desc,meta);
+  if(n===undefined) return PEND("Number of nights is missing.",desc,meta);
+  chk("Number of nights",n,365,e); if(e.length) return {ok:false,errors:e};
+  return {ok:true,kg:n*F.A_hotel.v/trav,est:true,code:"A_hotel",desc,meta,assumptions:["Room emissions per night are shared equally among "+trav+" person(s) in the room."]};
+}
+const CALC={transport:cTransport,food:cFood,energy:cEnergy,waste:cWaste,shopping:cShop,water:cWater,travel:cTravel,other:cOther};
+function renderForm(keep){
+  keep=keep||{};
+  $("cattabs").innerHTML=CATS.map(c=>`<button type="button" aria-pressed="${c[0]===curCat}" onclick="editId=null;curCat='${c[0]}';renderForm()">${c[1]}</button>`).join("");
+  $("form").innerHTML=FORMS[curCat]()+`<label for="f-notes">Notes (optional)</label><textarea id="f-notes" rows="2" maxlength="300"></textarea>`;
+  $("f-date").value=keep["f-date"]||todayStr(); if($("f-time")) $("f-time").value=keep["f-time"]||nowT();
+  if(keep["f-meal"]&&$("f-meal")) $("f-meal").value=keep["f-meal"];
+  if(curCat==="waste") $("f-wtreat").innerHTML=opt(wTreatOpts("bio"));
+  if(curCat==="energy") $("f-watts").value=EW.aircon;
+  $("routeNote").style.display=curCat==="transport"?"":"none";
+  $("logTitle").textContent=editId?"Edit activity":"Log an Activity"; $("saveBtn").textContent=editId?"Save changes":"Save Activity";
+  $("saveBtn2").hidden=!!editId; $("cancelEdit").hidden=!editId; $("editNote").hidden=true;
+  syncForm(); preview();
+}
+function syncForm(){
+  const v=id=>{const e=$(id);return e?e.value:""}, show=(id,b)=>{const e=$(id); if(e) e.hidden=!b;};
+  if(curCat==="transport"){ const m=v("f-mode"), veh=["car","motorcycle","taxi"].includes(m); show("w-fuel",veh); show("w-occ",veh); show("w-oname",m==="other"); show("w-air",m==="airplane"); }
+  if(curCat==="energy"){ const s=v("f-src"), el=!["lpg","ofuel"].includes(s), kw=v("f-method")==="kwh";
+    show("w-method",el); show("w-kwh",el&&kw); show("w-hh",el&&kw); show("w-watts",el&&!kw); show("w-hours",el&&!kw); show("w-lpg",s==="lpg"); show("w-ofuel",s==="ofuel"); }
+  if(curCat==="travel"){ const fl=["dom","int"].includes(v("f-ttype")); show("w-tdist",fl); show("w-nights",!fl); }
+}
+function onForm(ev){
+  const t=ev.target, id=t.id;
+  if(id==="f-wtype") $("f-wtreat").innerHTML=opt(wTreatOpts(t.value));
+  if(id==="f-src"&&ev.type==="change"){ const w=$("f-watts"); if(w&&w.dataset.auto!=="0") w.value=EW[t.value]===undefined?"":EW[t.value]; }
+  if(id==="f-watts"&&ev.type==="input") t.dataset.auto="0";
+  syncForm(); preview();
+}
+function collect(){ const o={}; $("form").querySelectorAll("input,select,textarea").forEach(el=>{ if(el.id) o[el.id]=el.type==="checkbox"?el.checked:el.value; }); return o; }
+function loadInp(inp){ Object.keys(inp).forEach(id=>{ const el=$(id); if(!el) return; if(el.type==="checkbox") el.checked=!!inp[id]; else el.value=inp[id]; el.dispatchEvent(new Event("change",{bubbles:true})); }); }
+function compute(){ const o=collect(); return {o,r:CALC[curCat](o)}; }
+function preview(){
+  const {o,r}=compute(), box=$("preview"), dis=b=>{$("saveBtn").disabled=b;$("saveBtn2").disabled=b;};
+  if(!o["f-date"]){ box.className="preview err"; box.innerHTML="Choose a date."; dis(true); return; }
+  if(!r.ok){ box.className="preview err"; box.innerHTML="<strong>Check this entry</strong><ul>"+r.errors.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>"; dis(true); return; }
+  dis(false); box.className="preview";
+  if(typeof r.kg!=="number"){ box.innerHTML=`<strong>Not calculated</strong> <span class="badge warn">pending</span><p class="small" style="margin:.4em 0 0">${esc(r.reason)} You can still save this entry. It is listed as pending and left out of your totals; it is not counted as zero.</p>`; return; }
+  const f=r.code&&F[r.code];
+  box.innerHTML=`<strong>Estimated footprint: ${fmt(r.kg)} kg CO2e</strong>${r.est?' <span class="badge warn">estimate</span>':""}${r.userValue?' <span class="badge">value from your source</span>':f&&f.verified?' <span class="badge">verified factor</span>':' <span class="badge warn">demo factor, unverified</span>'}
+    <ul>${r.assumptions.map(a=>"<li>"+esc(a)+"</li>").join("")}${f?`<li>Factor used: ${esc(f.label)}, ${f.v} kg CO2e per ${f.basis.replace("_","-")}. Source: ${f.src?esc(f.src):"none yet (demonstration placeholder)"}.</li>`:""}${typeof r.avoided==="number"?`<li><strong>Separate estimate, not subtracted from your footprint:</strong> about ${fmt(r.avoided)} kg CO2e avoided. ${esc(r.avoidNote)}.</li>`:""}</ul>`;
+}
+function saveEntry(again){
+  const {o,r}=compute(); if(!r.ok||!o["f-date"]) return;
+  const kind=(curCat==="transport"&&o["f-mode"]==="airplane")?"t":(curCat==="travel"&&["dom","int"].includes(o["f-ttype"]))?"a":null;
+  if(kind){ const dup=state.entries.find(e=>e.id!==editId&&e.date===o["f-date"]&&(kind==="t"?(e.cat==="travel"&&e.meta&&["dom","int"].includes(e.meta.trip)):(e.cat==="transport"&&e.meta&&e.meta.mode==="airplane")));
+    if(dup&&!confirm("You already logged a flight on this date under "+(dup.cat==="travel"?"Travel and accommodation":"Transportation")+". Saving this one may count the same flight twice. Save anyway?")) return; }
+  const entry={id:editId||uid(),date:o["f-date"],time:o["f-time"]||"",cat:curCat,desc:r.desc,kg:typeof r.kg==="number"?r.kg:null,est:!!r.est,code:r.code||null,meta:r.meta||{},notes:(o["f-notes"]||"").trim(),avoided:typeof r.avoided==="number"?r.avoided:null,avoidNote:r.avoidNote||"",reason:r.reason||"",inp:o};
+  const before=streakInfo().current, wasEdit=!!editId;
+  if(wasEdit) state.entries=state.entries.map(e=>e.id===editId?entry:e); else state.entries.push(entry);
+  editId=null; save(); renderMissedReminder();
+  if(wasEdit){ go("hist"); return; }
+  renderForm(again?{"f-date":o["f-date"],"f-time":o["f-time"],"f-meal":o["f-meal"]}:{"f-date":o["f-date"]});
+  $("preview").className="preview"; $("preview").innerHTML="<strong>Activity saved.</strong> "+(entry.kg===null?"Emissions could not be calculated, so it is listed as pending.":"Estimated "+fmt(entry.kg)+" kg CO2e.")+streakNote(before)+(again?" Add the next item below.":" Add another, or open the dashboard to see your totals.");
+}
+function editEntry(id){
+  const e=state.entries.find(x=>x.id===id); if(!e) return; editId=id; curCat=e.cat; go("log");
+  if(e.inp) loadInp(e.inp);
+  else { $("f-date").value=e.date; if($("f-time")) $("f-time").value=e.time||nowT(); $("editNote").hidden=false; $("editNote").textContent="This entry was saved before editing was available. Re-enter its details; saving replaces it. Original: "+e.desc+"."; }
+}
+
+/* ---------- dashboard ---------- */
+function inPeriod(n){ const set=new Set(daysList(n)); return state.entries.filter(e=>set.has(e.date)); }
+function renderDash(){
+  $("period").value=state.period;
+  const days=daysList(state.period), ents=inPeriod(state.period);
+  const byDay={}; ents.forEach(e=>byDay[e.date]=(byDay[e.date]||0)+kv(e));
+  const total=ents.reduce((s,e)=>s+kv(e),0), logged=days.filter(d=>byDay[d]!==undefined).length;
+  $("d-total").innerHTML=fmt(total)+"<span>kg CO2e</span>";
+  $("d-sub").textContent = logged? "Sum of "+ents.length+" logged entr"+(ents.length===1?"y":"ies")+" over "+logged+" logged day"+(logged===1?"":"s")+". Average per logged day: "+fmt(total/logged)+" kg CO2e." : "No entries in this period yet.";
+  $("d-complete").textContent = "Data completeness: "+logged+" of "+days.length+" days have entries ("+Math.round(logged/days.length*100)+"%).";
+  renderDayByDay();
+  const cats=Object.fromEntries(CATS.map(c=>[c[0],0])); ents.forEach(e=>{ cats[e.cat]=(cats[e.cat]||0)+kv(e); });
+  { const pend=ents.filter(e=>!isCalc(e)).length, av=ents.reduce((s,e)=>s+(e.avoided||0),0);
+    $("d-sub").textContent += (pend?" "+plural(pend,"entry").replace("entrys","entries")+" could not be calculated and "+(pend===1?"is":"are")+" left out of the total.":"")+(av>0?" Separate scenario, not subtracted: about "+fmt(av)+" kg CO2e potentially avoided (walking, cycling, recycling, composting).":""); }
+  const cm=Math.max(0.0001,...Object.values(cats));
+  $("cats").innerHTML=CATS.map(c=>`<div class="cat"><div>${c[1]}</div><div class="track"><div class="fill" style="width:${cats[c[0]]/cm*100}%"></div></div><div class="v">${fmt(cats[c[0]])} kg</div></div>`).join("");
+  const rec=[...ents].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  $("d-recent").innerHTML = rec.length? rec.map(e=>`<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)">${e.date}: ${esc(e.desc)} <strong>${isCalc(e)?fmt(e.kg)+" kg":"Not calculated"}</strong></div>`).join("")
+    : `<div class="empty">Nothing logged in this period. <br><button class="btn" style="margin-top:10px" onclick="go('log')">Log your first activity</button></div>`;
+}
+
+/* ---------- dashboard: day by day ---------- */
+let selDay = null;
+const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const sunOf = s => addDays(s, -pd(s).getDay());
+function pickDay(d){ selDay=d; renderDash(); }
+function shiftWeek(n){ const t=todayStr(); let d=addDays(selDay||t,7*n); if(d>t) d=t; selDay=d; renderDash(); }
+function startLog(c){ curCat=c; go("log"); }
+function entIcon(e){
+  if(e.cat==="transport") return ({car:"🚗",motorcycle:"🏍️",tricycle:"🛺",jeepney:"🚌",bus:"🚌",active:"🚶",train:"🚆",airplane:"✈️",taxi:"🚕",bicycle:"🚲",walking:"🚶"})[e.meta.mode]||"🚗";
+  if(e.cat==="food") return (F[e.code]&&F[e.code].liquid)?"🥤":"🍽️";
+  if(e.cat==="waste") return ["compost","recycled","junk"].includes(e.meta.treat)?"♻️":"🗑️";
+  return ({energy:"⚡",shopping:"🛍️",water:"💧",travel:(e.meta&&["hotel","oacc"].includes(e.meta.trip))?"🏨":"✈️",other:"📝"})[e.cat]||"📝";
+}
+function renderDayByDay(){
+  const t=todayStr(); if(!selDay||selDay>t) selDay=t;
+  const ws=sunOf(selDay), wk=[0,1,2,3,4,5,6].map(i=>addDays(ws,i));
+  const tot={}, cnt={}; state.entries.forEach(e=>{ tot[e.date]=(tot[e.date]||0)+kv(e); cnt[e.date]=(cnt[e.date]||0)+1; });
+  const u=state.user, first=u?u.name.split(/\s+/)[0]:"";
+  $("dbd-hello").textContent = first ? "Hello, "+first+"!" : "Hello!";
+  const n=streakInfo().current;
+  $("dbd-flame").textContent="🔥 "+n; $("dbd-flame").setAttribute("aria-label","Current streak: "+plural(n,"day"));
+  $("dbd-month").textContent=pd(selDay).toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  $("dbd-next").disabled = addDays(ws,7)>t;
+  $("dbd-week").innerHTML=wk.map(d=>{
+    const fut=d>t, has=cnt[d]!==undefined, sel=d===selDay;
+    const lab=pd(d).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"})+(fut?"":has?", "+plural(cnt[d],"entry").replace("entrys","entries"):", no entries");
+    return `<button type="button" aria-pressed="${sel}" aria-label="${esc(lab)}"${fut?" disabled":""} onclick="pickDay('${d}')"><span class="dn">${DN[pd(d).getDay()]}</span><span class="dd">${+d.slice(8)}</span><i class="dot${fut?" fut":has?"":" none"}"></i></button>`;
+  }).join("");
+  const list=state.entries.filter(e=>e.date===selDay), head=pd(selDay).toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+  $("dbd-sum").textContent = list.length ? head+": "+fmt(tot[selDay])+" kg CO2e" : head;
+  const chk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12.5 3 3 5-6.5"/></svg>';
+  $("dbd-list").innerHTML = list.length ? list.map(e=>{ const c=CATS.find(x=>x[0]===e.cat);
+    return `<div class="ecard"><div class="eic" aria-hidden="true">${entIcon(e)}</div><div class="etx"><strong>${esc(e.desc)}</strong><div class="small muted">${esc(c?c[1]:e.cat)}, ${kgTxt(e)} ${e.est?'<span class="badge warn">estimated</span>':""}</div></div><div class="echk" title="Logged">${chk}</div></div>`; }).join("")
+    : `<div class="eempty">No entries for this day. That is missing data, not zero emissions.<br><button class="btn" style="margin-top:10px" onclick="go('log')">Log an activity</button></div>`;
+}
+
+/* ---------- history ---------- */
+function renderHist(){
+  const c=$("hcat").value, a=$("hfrom").value, b=$("hto").value;
+  const list=state.entries.filter(e=>(c==="all"||e.cat===c)&&(!a||e.date>=a)&&(!b||e.date<=b)).sort((x,y)=>(y.date+(y.time||"")).localeCompare(x.date+(x.time||"")));
+  const calc=list.filter(isCalc), tot=calc.reduce((s,e)=>s+e.kg,0);
+  $("hsum").textContent=list.length?plural(list.length,"entry").replace("entrys","entries")+": "+plural(calc.length,"calculated entry").replace("entrys","entries")+" totalling "+fmt(tot)+" kg CO2e, "+(list.length-calc.length)+" not calculated.":"";
+  const cn=k=>(CATS.find(x=>x[0]===k)||[k,k])[1];
+  $("hist").innerHTML = list.length ? `<table><thead><tr><th>Date</th><th>Category</th><th>Activity</th><th class="num">kg CO2e</th><th><span class="sr">Actions</span></th></tr></thead><tbody>`+
+    list.map(e=>`<tr><td>${e.date}${e.time?"<br>"+e.time:""}</td><td>${esc(cn(e.cat))}</td><td>${esc(e.desc)} ${e.est?'<span class="badge warn">estimated</span>':""}${e.notes?`<div class="small muted">${esc(e.notes)}</div>`:""}${isCalc(e)?"":`<div class="small muted">${esc(e.reason||"Emissions could not be calculated.")}</div>`}${typeof e.avoided==="number"?`<div class="small muted">Separate estimate: ${fmt(e.avoided)} kg CO2e avoided</div>`:""}</td><td class="num">${isCalc(e)?fmt(e.kg):'<span class="badge warn">Not calculated</span>'}</td><td><div class="hrow"><button class="btn alt" onclick="editEntry('${e.id}')">Edit</button><button class="btn alt" onclick="delEntry('${e.id}')">Delete</button></div></td></tr>`).join("")+`</tbody></table>`
+    : `<div class="empty">No entries match. Log an activity or load the sample data from the home page.</div>`;
+}
+function delEntry(id){ const e=state.entries.find(x=>x.id===id); if(!e||!confirm("Delete “"+e.desc+"” from "+e.date+"? This cannot be undone.")) return; state.entries=state.entries.filter(x=>x.id!==id); save(); renderHist(); }
+function clearAll(){ if(confirm("Delete all entries in this browser?")){ state.entries=[]; state.recs={}; save(); renderHist(); } }
+
+/* ---------- recommendations ---------- */
+const PRIV = ["motorcycle","car"];
+function buildRecs(ents){
+  const out=[], tr=ents.filter(e=>e.cat==="transport"), fd=ents.filter(e=>e.cat==="food"), ws=ents.filter(e=>e.cat==="waste");
+  const sum = a => a.reduce((s,e)=>s+kv(e),0);
+  const short=tr.filter(e=>PRIV.includes(e.meta.mode)&&e.meta.dist<=3);
+  if(short.length>=2) out.push({code:"RT1",title:"Walk or cycle short trips",
+    pattern:short.length+" trips of 3 km or less one-way by private vehicle.",action:"Walk or cycle for some of these short trips.",
+    why:"Walking and cycling have no direct vehicle emissions.",base:sum(short),alt:0,
+    factors:[...new Set(short.map(e=>e.code))].map(c=>F[c].label+" "+F[c].v+" per vehicle-km"),assumptions:["Walking or cycling counted as zero direct emissions.","All listed trips are replaced."],
+    limit:"Depends on weather, safety, distance, and time. Not every trip can be replaced."});
+  const solo=tr.filter(e=>e.meta.mode==="car"&&e.meta.occ===1);
+  if(solo.length>=2) out.push({code:"RT2",title:"Share car rides",
+    pattern:solo.length+" car trips with only the driver aboard.",action:"Carpool with one other person on some of these trips.",
+    why:"Vehicle emissions are shared among more occupants, which lowers the per-person amount.",base:sum(solo),alt:sum(solo)/2,
+    factors:["Private car "+F.T_car.v+" per vehicle-km"],assumptions:["Each trip gets exactly one extra passenger.","The route does not change."],
+    limit:"Needs someone with a similar route and schedule. A detour would reduce the saving."});
+  const long=tr.filter(e=>PRIV.includes(e.meta.mode)&&e.meta.dist>=5);
+  if(long.length>=2){ const alt=long.reduce((s,e)=>s+e.meta.dist*e.meta.legs*F.T_bus.v,0);
+    if(sum(long)-alt>0) out.push({code:"RT3",title:"Use public transport for longer trips",
+    pattern:long.length+" trips of 5 km or more one-way by private vehicle.",action:"Take a bus for some of these trips.",
+    why:"Per passenger, bus travel has a lower factor than a private vehicle trip.",base:sum(long),alt,
+    factors:["Bus "+F.T_bus.v+" per passenger-km"],assumptions:["Same distance by bus as by the private vehicle."],
+    limit:"Only possible where a bus serves the route and the schedule fits."}); }
+  const meat=fd.filter(e=>["beef","pork"].includes(e.meta.item));
+  if(meat.length>=2){ const alt=meat.reduce((s,e)=>s+e.meta.kg*F.F_chicken.v,0);
+    if(sum(meat)-alt>0) out.push({code:"RF1",title:"Swap some beef or pork meals for chicken",
+    pattern:meat.length+" beef or pork meals logged.",action:"Replace some of these meals with chicken.",
+    why:"The factor per kg is lower for chicken than for beef or pork.",base:sum(meat),alt,
+    factors:["Beef "+F.F_beef.v+", pork "+F.F_pork.v+", chicken "+F.F_chicken.v+" per kg"],assumptions:["Same weight of food is replaced."],
+    limit:"Depends on budget, availability, diet, and preference. Nutrition is not assessed here."});}
+  const bio=ws.filter(e=>e.meta.type==="bio"&&["dump","bin","roadside","burn"].includes(e.meta.treat)), bkg=bio.reduce((s,e)=>s+e.meta.kg,0);
+  if(bkg>=1) out.push({code:"RW1",title:"Compost biodegradable waste",
+    pattern:fmt(bkg)+" kg of biodegradable waste that was not composted.",action:"Compost kitchen and garden waste instead.",
+    why:"Composting has a lower demo factor than dumpsite disposal.",base:sum(bio),alt:bkg*F.W_bio_compost.v,
+    factors:["Dumpsite "+F.W_bio_dump.v+", composting "+F.W_bio_compost.v+" per kg"],assumptions:["All of this waste can be composted."],
+    limit:"Needs space and a composting method. Local services differ."});
+  const rec=ws.filter(e=>e.meta.type==="rec"&&["dump","bin","roadside","burn"].includes(e.meta.treat)), rkg=rec.reduce((s,e)=>s+e.meta.kg,0);
+  if(rkg>=1) out.push({code:"RW2",title:"Separate and recycle recyclables",
+    pattern:fmt(rkg)+" kg of recyclable waste that was not recycled.",action:"Separate recyclables and bring them to a collection point.",
+    why:"Recycling has a lower demo factor than dumpsite disposal.",base:sum(rec),alt:rkg*F.W_rec_recycled.v,
+    factors:["Dumpsite "+F.W_rec_dump.v+", recycling "+F.W_rec_recycled.v+" per kg"],assumptions:["All of this waste is accepted for recycling."],
+    limit:"Depends on a nearby collection point or junk shop that takes the material."});
+  const ac=ents.filter(e=>e.cat==="energy"&&e.meta.src==="aircon"&&typeof e.meta.kwh==="number"), akwh=ac.reduce((s,e)=>s+e.meta.kwh,0);
+  if(ac.length>=2&&akwh>=4){ const b=sum(ac); out.push({code:"RE1",title:"Use a fan for part of your air-conditioner hours",
+    pattern:ac.length+" air-conditioner entries totalling "+fmt(akwh)+" kWh.",action:"Use an electric fan instead of the air conditioner for some of these hours when it is comfortable.",
+    why:"A fan draws far less power than an air conditioner.",base:b,alt:b*0.5+b*0.5*(50/1000),
+    factors:["Grid electricity "+F.E_grid.v+" per kWh","Typical demo power: air conditioner 1000 W, fan 50 W"],assumptions:["Half of the air-conditioner energy is replaced by a fan.","Typical wattages are demo values, not your appliances."],
+    limit:"Depends on heat, health, and comfort. Not every hour can be replaced."}); }
+  return out;
+}
+const STATES=[["suggested","Suggested"],["accepted","I will try this"],["done","I did this"],["dismissed","Not for me"]];
+function setRec(code,s){ state.recs[code]=s; save(); renderRecs(); }
+function renderRecs(){
+  $("baseline").checked=state.baseline;
+  if(state.baseline){ $("recbox").innerHTML=`<div class="card"><div class="empty">Recommendations are hidden during the baseline week so your normal footprint can be measured. Switch off study mode to see them.</div></div>`; return; }
+  const ents=inPeriod(state.period), recs=buildRecs(ents.filter(isCalc)).filter(r=>r.base-r.alt>0);
+  if(!recs.length){ $("recbox").innerHTML=`<div class="card"><div class="empty">No suggestions yet for the last ${state.period} days. Log more entries (at least two trips, two beef or pork meals, or 1 kg of waste) or load the sample data from the home page.</div></div>`; return; }
+  let doneSum=0;
+  recs.forEach(r=>{ if(state.recs[r.code]==="done") doneSum+=r.base-r.alt; });
+  $("recbox").innerHTML = recs.map(r=>{ const s=state.recs[r.code]||"suggested", save_=r.base-r.alt;
+    return `<div class="card rec"><h3>${esc(r.title)} <span class="badge${s==="dismissed"?"":""}">${esc(STATES.find(x=>x[0]===s)[1])}</span></h3>
+    <dl><dt>What we noticed</dt><dd>${esc(r.pattern)}</dd>
+    <dt>Suggested action</dt><dd>${esc(r.action)}</dd>
+    <dt>Why it may help</dt><dd>${esc(r.why)}</dd>
+    <dt>Baseline</dt><dd>${fmt(r.base)} kg CO2e (your logged entries)</dd>
+    <dt>Alternative</dt><dd>${fmt(r.alt)} kg CO2e (scenario)</dd>
+    <dt>Potential saving</dt><dd><strong>${fmt(save_)} kg CO2e</strong> <span class="badge warn">potential, not measured</span></dd>
+    <dt>Factors used</dt><dd class="small">${esc(r.factors.join("; "))} (sources and status are in the factor table on the About page)</dd>
+    <dt>Assumptions</dt><dd class="small">${esc(r.assumptions.join(" "))}</dd>
+    <dt>Limits</dt><dd class="small">${esc(r.limit)}</dd></dl>
+    <div class="actions">${STATES.slice(1).map(x=>`<button class="btn${s===x[0]?"":" alt"}" onclick="setRec('${r.code}','${x[0]}')">${x[1]}</button>`).join("")}</div></div>`; }).join("")
+    + `<div class="card"><h3>Actions you reported as done</h3><p class="small">Total potential saving from those actions: <strong>${fmt(doneSum)} kg CO2e</strong>. This is a scenario estimate. It is not deducted from your footprint on the dashboard.</p></div>`;
+}
+
+/* ---------- factors table ---------- */
+function renderFactors(){
+  $("ftable").innerHTML=`<table><thead><tr><th>Code</th><th>Activity</th><th class="num">kg CO2e per unit</th><th>Unit</th><th>Source</th><th>Status</th></tr></thead><tbody>`+
+  Object.keys(F).map(k=>`<tr><td>${k}</td><td>${esc(F[k].label)}</td><td class="num">${F[k].v}</td><td>${F[k].basis.replace("_","-")}</td><td>${F[k].src?esc(F[k].src):"None yet"}</td><td>${F[k].verified?'<span class="badge">verified</span>':F[k].src?'<span class="badge">sourced, not yet verified</span>':'<span class="badge warn">demo, unverified</span>'}</td></tr>`).join("")+`</tbody></table>`;
+}
+
+/* ---------- sample data and start-up ---------- */
+function loadSample(){
+  if(state.entries.length && !confirm("Loading sample data replaces your current entries. Continue?")) return;
+  const days=daysList(10), mk=(d,res)=>({id:uid(),date:d,cat:res.cat,desc:res.r.desc,kg:res.r.kg,est:res.r.est,code:res.r.code,meta:res.r.meta});
+  const E=[]; const add=(d,cat,r)=>{ if(r.ok) E.push(mk(d,{cat,r})); };
+  days.forEach((d,i)=>{
+    if(i===3||i===6) return; // days with no entries
+    add(d,"transport",calcTransport({mode:i%3===0?"jeepney":"car",dist:i%3===0?6:2.5,round:true,occ:1}));
+    if(i%2===0) add(d,"transport",calcTransport({mode:"car",dist:8,round:false,occ:1}));
+    add(d,"food",calcFood({item:i%2?"beef":"chicken",unit:"serving",qty:1}));
+    add(d,"food",calcFood({item:i%4===0?"pork":"rice",unit:"serving",qty:1}));
+    add(d,"waste",calcWaste({type:"bio",treat:"dump",by:"kg",val:0.6}));
+    if(i%2) add(d,"waste",calcWaste({type:"rec",treat:"dump",by:"kg",val:0.5}));
+    add(d,"energy",calcEnergy({kind:"grid",val:6,hh:4}));
+  });
+  state.entries=E; state.recs={}; save(); go("dash");
+}
+/* ---------- streaks ---------- */
+const MS=[[3,"Getting started"],[7,"One week"],[14,"Two weeks"],[30,"One month"],[60,"Two months"]];
+const pd = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const addDays = (s,n) => { const d=pd(s); d.setDate(d.getDate()+n); return iso(d); };
+const plural = (n,w) => n+" "+w+(n===1?"":"s");
+function streakInfo(){
+  const set=new Set(state.entries.map(e=>e.date)), t=todayStr();
+  let d=set.has(t)?t:addDays(t,-1), cur=0;
+  while(set.has(d)){ cur++; d=addDays(d,-1); }
+  let best=0, run=0, prev=null;
+  [...set].sort().forEach(x=>{ run=(prev&&addDays(prev,1)===x)?run+1:1; best=Math.max(best,run); prev=x; });
+  return {current:cur,best,set,today:set.has(t)};
+}
+function streakNote(before){
+  const n=streakInfo().current; if(n<=before) return "";
+  const hit=MS.find(m=>m[0]===n);
+  return " Streak: "+plural(n,"day")+" in a row."+(hit?" You earned the “"+hit[1]+"” reward!":"");
+}
+function renderChip(){
+  const u=state.user; if(!u) return;
+  const n=streakInfo().current;
+  $("chip").textContent="🔥 "+n; $("chip").setAttribute("aria-label","Current streak: "+plural(n,"day")+". Open profile.");
+  $("h-av").textContent=$("d-av").textContent=u.name.charAt(0).toUpperCase();
+  $("d-name").textContent=u.name; $("d-mail").textContent=u.email;
+}
+let pGroup="day", pCat="all";
+const weekStart = s => { const d=pd(s); d.setDate(d.getDate()-(d.getDay()+6)%7); return iso(d); };
+const nice = s => pd(s).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+function renderProfile(){
+  const u=state.user, si=streakInfo();
+  renderReminderSettings();
+  $("p-av").textContent=u.name.charAt(0).toUpperCase(); $("p-name").textContent=u.name; $("p-mail").textContent=u.email+", member since "+u.since;
+  $("p-cur").innerHTML=si.current+"<span>"+(si.current===1?"day":"days")+" in a row</span>";
+  $("p-msg").textContent = si.current===0 ? "Log an activity today to start a streak." : si.today ? "You’ve logged today. Come back tomorrow to keep it going." : "Log something today to keep your streak alive.";
+  $("p-best").innerHTML="Best streak: <strong>"+plural(si.best,"day")+"</strong>";
+  const next=MS.find(m=>m[0]>si.current);
+  $("p-bar").style.width=(next?si.current/next[0]*100:100)+"%";
+  $("p-next").textContent = next ? plural(next[0]-si.current,"more day")+" to earn “"+next[1]+"”." : "You’ve earned every reward. Keep going!";
+  $("p-badges").innerHTML=MS.map(m=>{ const got=si.best>=m[0]; return `<span class="bdg${got?" got":""}">${got?"✓ ":""}${m[1]}, ${m[0]} days${got?"":" (locked)"}</span>`; }).join("");
+  const days=daysList(28), t=todayStr(), per=[];
+  $("p-cal").innerHTML=days.map(d=>`<div class="${si.set.has(d)?"on":""}${d===t?" today":""}" title="${d}: ${si.set.has(d)?"logged":"no entries"}">${+d.slice(8)}</div>`).join("");
+  for(let i=0;i<28;i+=7) per.push(days.slice(i,i+7).filter(d=>si.set.has(d)).length);
+  const tot=per.reduce((a,b)=>a+b,0);
+  $("p-reg").textContent="Logged on "+tot+" of 28 days ("+Math.round(tot/28*100)+"%). Days logged per week, oldest to newest: "+per.join(", ")+". Filled squares are days with entries; dashed squares are days without.";
+  $("g-day").setAttribute("aria-pressed",pGroup==="day"); $("g-week").setAttribute("aria-pressed",pGroup==="week"); $("p-cat").value=pCat;
+  const g={}; state.entries.filter(e=>pCat==="all"||e.cat===pCat).forEach(e=>{ const k=pGroup==="day"?e.date:weekStart(e.date); (g[k]=g[k]||[]).push(e); });
+  const keys=Object.keys(g).sort().reverse();
+  $("p-hist").innerHTML = keys.length ? keys.map(k=>{ const a=g[k], sum=a.reduce((x,e)=>x+kv(e),0);
+    const head = pGroup==="day" ? pd(k).toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric",year:"numeric"}) : "Week of "+nice(k)+" to "+nice(addDays(k,6));
+    const dl = pGroup==="week" ? ", "+plural(new Set(a.map(e=>e.date)).size,"day")+" logged" : "";
+    return `<div class="grp"><div class="gh"><strong>${esc(head)}</strong><span>${plural(a.length,"entry").replace("entrys","entries")}${dl}, ${fmt(sum)} kg CO2e</span></div>`+
+      a.map(e=>`<div class="small ent"><span>${pGroup==="week"?e.date+": ":""}${esc(e.desc)} ${e.est?'<span class="badge warn">estimated</span>':""}</span><strong>${isCalc(e)?fmt(e.kg)+" kg":"Not calculated"}</strong></div>`).join("")+`</div>`; }).join("")
+    : `<div class="empty" style="margin-top:14px">No records for this filter yet.</div>`;
+}
+
+/* ---------- menu and sign-in ---------- */
+function openMenu(){ $("drawer").classList.add("open"); $("scrim").hidden=false; $("burger").setAttribute("aria-expanded","true"); $("drawer").querySelector("nav button").focus(); }
+function closeMenu(){ $("drawer").classList.remove("open"); $("scrim").hidden=true; $("burger").setAttribute("aria-expanded","false"); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeMenu(); });
+const SKEY="carbontrace-session"; // Legacy key retained for compatibility; Firebase now owns sign-in state.
+function missedActivityDates(){
+  if(!state.user) return [];
+  const start=(state.user.since&&state.user.since<=todayStr())?state.user.since:todayStr();
+  const logged=new Set(state.entries.map(e=>e.date));
+  const out=[];
+  const d=pd(start), end=pd(todayStr());
+  // Check each calendar day from account start through yesterday; today is not a missed day.
+  while(d<end){ const key=iso(d); if(!logged.has(key)) out.push(key); d.setDate(d.getDate()+1); }
+  return out;
+}
+function renderMissedReminder(){
+  const box=$("missedReminder"); if(!box) return;
+  const missed=missedActivityDates();
+  if(!missed.length){ box.classList.remove("show"); box.innerHTML=""; return; }
+  const date=missed[missed.length-1];
+  const pretty=pd(date).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  box.innerHTML=`<strong>🔔 Missed activity reminder</strong><p>You haven’t logged an activity for <strong>${esc(pretty)}</strong>. Would you like to add one for that day?${missed.length>1?` You have ${missed.length} previous day(s) without an activity entry.`:""}</p><div class="actions"><button class="btn" type="button" onclick="openMissedDate('${date}')">Add activity for this day</button><button class="btn alt" type="button" onclick="dismissMissedReminder()">Remind me later</button></div>`;
+  box.classList.add("show");
+}
+function openMissedDate(date){ go("log"); if($("f-date")){ $("f-date").value=date; preview(); } }
+function dismissMissedReminder(){ const box=$("missedReminder"); if(box){box.classList.remove("show");box.innerHTML="";} }
+function openTodayLog(){ go("log"); if($("f-date")){ $("f-date").value=todayStr(); preview(); } }
+function noonReminderKey(){ return "carbontrace-daily-reminders:"+(state.user?state.user.email:"guest"); }
+function getReminderTimes(){
+  const defaults=["08:00","12:00","20:00"];
+  try{ const raw=localStorage.getItem(noonReminderKey()+":times"); if(raw){const a=JSON.parse(raw);if(Array.isArray(a)&&a.length===3&&a.every(x=>/^([01]\d|2[0-3]):[0-5]\d$/.test(x)))return a;} }catch(e){}
+  return defaults;
+}
+function renderReminderSettings(){
+  const times=getReminderTimes();
+  [1,2,3].forEach((n,i)=>{const el=$("reminderTime"+n);if(el)el.value=times[i];const pel=$("profileReminderTime"+n);if(pel)pel.value=times[i];});
+  let saved=false;try{saved=localStorage.getItem(noonReminderKey()+":times-saved")==="yes";}catch(e){}
+  const panel=$("noonReminder");
+  // The page-wide reminder panel is hidden; reminder management lives under Profile and streak.
+  if(panel){panel.classList.remove("show");panel.hidden=true;panel.style.display="none";}
+  const editor=$("profileReminderEditor"); if(editor && !saved) editor.hidden=false;
+  const summary=$("profileReminderSummary");
+  if(summary){
+    if(saved) summary.textContent="Reminders are set for "+times.map(t=>{const [h,m]=t.split(":").map(Number);return new Date(2000,0,1,h,m).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}).join(", ")+". Daily reminders stop after you log an activity.";
+    else summary.textContent="Set up to three daily reminder times. Once saved, the setup controls will be hidden; use Undo if you need to change them.";
+  }
+  const actions=$("profileReminderActions"); if(actions) actions.hidden=!saved;
+  if(editor && saved && !window.carbonReminderEditorOpen) editor.hidden=true;
+}
+function undoShowReminderEditor(){
+  window.carbonReminderEditorOpen=true;
+  const editor=$("profileReminderEditor"), actions=$("profileReminderActions");
+  if(editor)editor.hidden=false; if(actions)actions.hidden=true;
+  const times=getReminderTimes(); [1,2,3].forEach((n,i)=>{const el=$("profileReminderTime"+n);if(el)el.value=times[i];});
+}
+function cancelReminderEditor(){
+  window.carbonReminderEditorOpen=false;
+  const editor=$("profileReminderEditor"), actions=$("profileReminderActions");
+  if(editor)editor.hidden=true; if(actions)actions.hidden=true;
+  renderReminderSettings();
+}
+async function saveProfileReminderSettings(){
+  const times=[1,2,3].map(n=>$("profileReminderTime"+n)?.value||"");
+  if(times.some(t=>!/^([01]\d|2[0-3]):[0-5]\d$/.test(t))){const st=$("profileReminderStatus");if(st)st.textContent="Choose a valid time for all three reminders.";return;}
+  try{localStorage.setItem(noonReminderKey()+":times",JSON.stringify(times));localStorage.setItem(noonReminderKey()+":times-saved","yes");localStorage.setItem(noonReminderKey()+":enabled","yes");}catch(e){}
+  if("Notification" in window && Notification.permission==="default"){try{await Notification.requestPermission();}catch(e){}}
+  window.carbonReminderEditorOpen=false;
+  renderReminderSettings(); scheduleNoonReminder();
+  const status=$("profileReminderStatus"); if(status)status.textContent="Reminder times saved.";
+}
+async function saveReminderSettings(){
+  if(!state.user){const st=$("noonStatus");if(st)st.textContent="Sign in first to save reminder settings.";return;}
+  const times=[1,2,3].map(n=>$("reminderTime"+n)?.value||"");
+  if(times.some(t=>!/^([01]\d|2[0-3]):[0-5]\d$/.test(t))){const st=$("noonStatus");if(st)st.textContent="Choose a valid time for all three reminders.";return;}
+  try{localStorage.setItem(noonReminderKey()+":times",JSON.stringify(times));localStorage.setItem(noonReminderKey()+":times-saved","yes");localStorage.setItem(noonReminderKey()+":enabled","yes");}catch(e){}
+  // Request notification permission directly from the Save click when supported.
+  if("Notification" in window && Notification.permission==="default"){
+    try{await Notification.requestPermission();}catch(e){}
+  }
+  renderReminderSettings();
+  scheduleNoonReminder();
+}
+function editReminderSettings(){ undoShowReminderEditor(); }
+async function enableNoonReminders(){
+  const status=$("noonStatus");
+  if(!state.user){if(status)status.textContent="Sign in first to enable your daily reminders.";return;}
+  if(!("Notification" in window)){if(status)status.textContent="This browser does not support browser notifications. Keep CarbonDiary open to see in-app reminders.";return;}
+  try{const permission=Notification.permission==="granted"?"granted":await Notification.requestPermission();
+    if(permission==="granted"){
+      try{localStorage.setItem(noonReminderKey()+":enabled","yes");}catch(e){}
+      if(status)status.textContent="Browser notifications enabled. Your saved reminder times will be used while CarbonDiary is open.";
+      scheduleNoonReminder();notifyMissedDays();
+    }else if(status)status.textContent="Notifications were not allowed. In-app reminders can still appear while CarbonDiary is open.";
+  }catch(e){if(status)status.textContent="Could not enable browser notifications. In-app reminders can still appear while the page is open.";}
+}
+function sendActivityReminder(slot, hourLabel){
+  if(!state.user) return;
+  const today=todayStr();
+  // Any entry on the current date satisfies the daily logging reminder.
+  if(state.entries.some(e=>e.date===today)) return;
+  const key=noonReminderKey()+":"+today+":"+slot;
+  try{if(localStorage.getItem(key)==="sent") return; localStorage.setItem(key,"sent");}catch(e){}
+  const msg="It’s "+hourLabel+". Remember to log your activity for today in CarbonDiary.";
+  let settingsSaved=false;try{settingsSaved=localStorage.getItem(noonReminderKey()+":times-saved")==="yes";}catch(e){}
+  // Daily prompts are delivered as browser notifications only. Never reopen
+  // the reminder setup/active panel after the user has saved their schedule.
+  const banner=$("noonReminder");
+  if(banner && settingsSaved){ banner.classList.remove("show"); banner.hidden=true; banner.style.display="none"; }
+  if("Notification" in window && Notification.permission==="granted"){
+    try{const n=new Notification("CarbonDiary — Daily activity reminder",{body:msg,tag:"carbon-diary-"+slot+"-"+today}); n.onclick=()=>{window.focus();openTodayLog();n.close();};}catch(e){}
+  }
+}
+function scheduleNoonReminder(){
+  if(!state.user)return;
+  try{if(localStorage.getItem(noonReminderKey()+":enabled")!=="yes")return;}catch(e){return;}
+  const now=new Date(), current=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  getReminderTimes().forEach((t,i)=>{if(current===t)sendActivityReminder("custom"+(i+1),new Date(2000,0,1,...t.split(":").map(Number)).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}));});
+}
+function notifyMissedDays(){
+  if(!state.user || !("Notification" in window) || Notification.permission!=="granted") return;
+  const missed=missedActivityDates();
+  if(!missed.length) return;
+  const today=todayStr(), key=noonReminderKey()+":missed:"+today;
+  try{if(localStorage.getItem(key)==="sent") return; localStorage.setItem(key,"sent");}catch(e){}
+  const latest=missed[missed.length-1];
+  const date=pd(latest).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+  try{const n=new Notification("CarbonDiary — Missed activity",{body:"You haven’t logged an activity for "+date+". "+(missed.length>1?missed.length+" days are missing. Open CarbonDiary to fill in missed dates.":"You can add an activity for that date."),tag:"carbon-diary-missed-"+today}); n.onclick=()=>{window.focus();renderMissedReminder();const box=$("missedReminder");if(box)box.scrollIntoView({behavior:"smooth",block:"start"});n.close();};}catch(e){}
+}
+setInterval(scheduleNoonReminder,5000);
+function enter(){ fillCatSelects(); document.body.classList.add("in"); renderFactors(); renderChip(); go("home"); renderReminderSettings(); const status=$("noonStatus"); if(status && state.user){ let enabled=false;try{enabled=localStorage.getItem(noonReminderKey()+":enabled")==="yes";}catch(e){} if(!enabled)status.textContent="Save your preferred times and enable browser notifications to receive reminders. CarbonDiary must remain open."; } scheduleNoonReminder(); }
+async function signIn(){
+  const email=$("a-email").value.trim().toLowerCase(), password=$("a-pass").value;
+  $("a-err").textContent="";
+  if(!email||!password){ $("a-err").textContent="Enter your email and password."; return; }
+  try{ await window.cdSignIn(email,password); }catch(e){ $("a-err").textContent=authError(e); }
+}
+async function signUp(){
+  const name=$("a-name").value.trim(), email=$("a-email").value.trim().toLowerCase(), password=$("a-pass").value;
+  $("a-err").textContent="";
+  if(!name){ $("a-err").textContent="Enter your name to create an account."; return; }
+  if(!email||!password){ $("a-err").textContent="Enter your email and password."; return; }
+  if(password.length<6){ $("a-err").textContent="Your password must contain at least 6 characters."; return; }
+  try{ await window.cdSignUp(name,email,password); }catch(e){ $("a-err").textContent=authError(e); }
+}
+async function resetPassword(){
+  const email=$("a-email").value.trim().toLowerCase();
+  if(!email){ $("a-err").textContent="Enter your email address first."; return; }
+  try{ await window.cdResetPassword(email); $("a-err").textContent="Password reset email sent. Check your inbox."; $("a-err").style.color="var(--moss)"; }
+  catch(e){ $("a-err").style.color="var(--red)"; $("a-err").textContent=authError(e); }
+}
+function authError(e){
+  const code=e&&e.code||"";
+  return ({"auth/email-already-in-use":"An account already exists with this email. Sign in instead.","auth/invalid-email":"Enter a valid email address.","auth/weak-password":"Choose a stronger password (at least 6 characters).","auth/invalid-credential":"Incorrect email or password.","auth/user-not-found":"No account was found. Create an account first.","auth/wrong-password":"Incorrect email or password.","auth/too-many-requests":"Too many attempts. Please wait and try again.","auth/network-request-failed":"Network error. Check your internet connection.","auth/operation-not-allowed":"Email/password sign-in is not enabled in Firebase Authentication."})[code]||"Authentication failed. Please try again.";
+}
+function signOut(){ editId=null; closeMenu(); window.cdSignOut().catch(e=>{ $("a-err").textContent=authError(e); }); }
+window.cdHandleAuth = async function(firebaseUser){
+  if(!firebaseUser){
+    state={entries:[],recs:{},baseline:false,period:7,user:null}; selDay=null;
+    document.body.classList.remove("in");
+    return;
+  }
+  const uid=firebaseUser.uid, email=(firebaseUser.email||"").toLowerCase();
+  let restored=null;
+  try{
+    const raw=localStorage.getItem(KEY+":"+uid) || localStorage.getItem(KEY+":"+email);
+    if(raw) restored=JSON.parse(raw);
+  }catch(e){}
+  state=Object.assign({entries:[],recs:{},baseline:false,period:7},restored||{});
+  state.user={uid,name:firebaseUser.displayName||((email.split("@")[0])||"Carbon Diary user"),email,since:(restored&&restored.user&&restored.user.since)||todayStr()};
+  save(); enter();
+};
+
+$("form").addEventListener("input",onForm); $("form").addEventListener("change",onForm);
+// Firebase onAuthStateChanged below restores the authenticated session.
+
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut as firebaseSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8LSguDgxDkB8BEADhe1jvn5TNqLHLULs",
+  authDomain: "carbon-diary-b0231.firebaseapp.com",
+  projectId: "carbon-diary-b0231",
+  storageBucket: "carbon-diary-b0231.firebasestorage.app",
+  messagingSenderId: "873146471392",
+  appId: "1:873146471392:web:6cdf978e24fd43e1a7d185",
+  measurementId: "G-869KXYSGT7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+window.cdSignIn = (email,password) => signInWithEmailAndPassword(auth,email,password);
+window.cdSignUp = async (name,email,password) => {
+  const credential = await createUserWithEmailAndPassword(auth,email,password);
+  await updateProfile(credential.user,{displayName:name});
+  if (window.cdHandleAuth) await window.cdHandleAuth(credential.user);
+  return credential;
+};
+window.cdResetPassword = email => sendPasswordResetEmail(auth,email);
+window.cdSignOut = () => firebaseSignOut(auth);
+onAuthStateChanged(auth, user => {
+  if (window.cdHandleAuth) window.cdHandleAuth(user);
+});
+</script>
+</body>
+</html>
