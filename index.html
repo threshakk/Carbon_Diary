@@ -199,7 +199,7 @@ body:not(.in) header.top,body:not(.in) main,body:not(.in) footer{display:none}
 </head>
 <body>
 <section id="auth"><div class="wrap"><div class="card authcard">
-  <div class="auth-brand"><img src="carbondiary-logo.png" alt="Carbon Diary logo"><h1>Welcome to Carbon Diary</h1><p class="muted">Track · Reduce · Go Green</p></div>
+  <div class="auth-brand"><img src="https://threshakk.github.io/Carbon_Diary/carbondiary-logo.png" alt="Carbon Diary logo"><h1>Welcome to Carbon Diary</h1><p class="muted">Track · Reduce · Go Green</p></div>
   <p>Sign in or create an account to access your personal carbon diary.</p>
   <label for="a-name">Name <span class="muted small">(for new accounts)</span></label><input id="a-name" autocomplete="name" placeholder="Your name">
   <label for="a-email">Email</label><input id="a-email" type="email" autocomplete="email" placeholder="you@example.com">
@@ -212,7 +212,7 @@ body:not(.in) header.top,body:not(.in) main,body:not(.in) footer{display:none}
 <header class="top">
   <div class="wrap">
     <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer" onclick="openMenu()"><span></span><span></span><span></span></button>
-    <div class="brand"><img class="brand-logo" src="carbondiary-logo.png" alt="">Carbon Diary</div>
+    <div class="brand"><img class="brand-logo" src="https://threshakk.github.io/Carbon_Diary/carbondiary-logo.png" alt="Carbon Diary">Carbon Diary</div>
     <button class="aboutlink" onclick="go('about')">About</button>
     <button class="chip" id="chip" onclick="go('profile')"></button>
     <button class="avatar" id="h-av" aria-label="Open your profile" onclick="go('profile')"></button>
@@ -1138,7 +1138,7 @@ function sendActivityReminder(slot, hourLabel){
   const banner=$("noonReminder");
   if(banner && settingsSaved){ banner.classList.remove("show"); banner.hidden=true; banner.style.display="none"; }
   if("Notification" in window && Notification.permission==="granted"){
-    try{const n=new Notification("CarbonDiary — Daily activity reminder",{body:msg,tag:"carbon-diary-"+slot+"-"+today}); n.onclick=()=>{window.focus();openTodayLog();n.close();};}catch(e){}
+    try{const n=new Notification("CarbonDiary — Daily activity reminder",{body:msg,tag:"carbondiary-"+slot+"-"+today}); n.onclick=()=>{window.focus();openTodayLog();n.close();};}catch(e){}
   }
 }
 function scheduleNoonReminder(){
@@ -1212,9 +1212,9 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, se
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8LSguDgxDkB8BEADhe1jvn5TNqLHLULs",
-  authDomain: "carbon-diary-b0231.firebaseapp.com",
-  projectId: "carbon-diary-b0231",
-  storageBucket: "carbon-diary-b0231.firebasestorage.app",
+  authDomain: "carbondiary-b0231.firebaseapp.com",
+  projectId: "carbodiary-b0231",
+  storageBucket: "carbondiary-b0231.firebasestorage.app",
   messagingSenderId: "873146471392",
   appId: "1:873146471392:web:6cdf978e24fd43e1a7d185",
   measurementId: "G-869KXYSGT7"
